@@ -9,7 +9,7 @@
  **************************************************************************************/
 
 
-import remixlab.bias.event.KeyEvent;
+import KeyEvent event.KeyEvent;
 
 /**
  * The root of all events that are to be handled by an {@link Agent}.
@@ -35,16 +35,18 @@ import remixlab.bias.event.KeyEvent;
  * of these mechanisms are available (as it often happens when dealing with specialized,
  * non-default input hardware).
  */
+
+export NO_MODIFIER_MASK = 0;
+export NO_ID = 0;
+export SHIFT = 1 << 0;
+export CTRL = 1 << 1;
+export META = 1 << 2;
+export ALT = 1 << 3;
+export ALT_GRAPH = 1 << 4;
+
 export default class Event {
   constructor(modifiers, id, other) {
     // modifier keys
-    this._NO_MODIFIER_MASK = 0;
-    this._NO_ID = 0;
-    this._SHIFT = 1 << 0;
-    this._CTRL = 1 << 1;
-    this._META = 1 << 2;
-    this._ALT = 1 << 3;
-    this._ALT_GRAPH = 1 << 4;
   
     this._fire; 
     this._flush;
