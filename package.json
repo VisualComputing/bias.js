@@ -1,0 +1,64 @@
+{
+  "name": "bias",
+  "version": "0.0.1",
+  "description": "A sequential single-threaded timer on top of which Proscene animations and timing routines are built",
+  "main": "build/bias.js",
+  "module": "build/bias.module.js",
+  "files": [
+    "package.json",
+    "bower.json",
+    "LICENSE",
+    "README.md",
+    "build/bias.js",
+    "build/bias.min.js",
+    "build/bias.module.js",
+    "src",
+    "examples/js"
+  ],
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "eslintConfig": {
+    "extends": "airbnb",
+    "plugins": [
+      "import"
+    ],
+    "globals": {
+      "window": true
+    },
+    "rules": {
+      "no-underscore-dangle": [
+        "error",
+        {
+          "allowAfterThis": true
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w -m inline",
+    "doc" : "esdoc",
+    "lint": "eslint src"
+  },
+  "keywords": [
+    "p5.js",
+    "bias.js",
+    "proscene"
+  ],
+  "author": "",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/@TODO/@TODO/issues"
+  },
+  "devDependencies": {
+    "esdoc": "^0.5.2",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0"
+  },
+  "dependencies": {}
+}
