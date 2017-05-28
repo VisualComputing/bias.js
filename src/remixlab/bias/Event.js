@@ -8,7 +8,6 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-package remixlab.bias;
 
 import remixlab.bias.event.KeyEvent;
 
@@ -36,40 +35,41 @@ import remixlab.bias.event.KeyEvent;
  * of these mechanisms are available (as it often happens when dealing with specialized,
  * non-default input hardware).
  */
-class Event {
-  // modifier keys
-  static final int NO_MODIFIER_MASK = 0;
-  static final int NO_ID = 0;
-  static final int SHIFT = 1 << 0;
-  static final int CTRL = 1 << 1;
-  static final int META = 1 << 2;
-  static final int ALT = 1 << 3;
-  static final int ALT_GRAPH = 1 << 4;
+export default class Event {
+  constructor(modifiers, id, other) {
+    // modifier keys
+    this._NO_MODIFIER_MASK = 0;
+    this._NO_ID = 0;
+    this._SHIFT = 1 << 0;
+    this._CTRL = 1 << 1;
+    this._META = 1 << 2;
+    this._ALT = 1 << 3;
+    this._ALT_GRAPH = 1 << 4;
+  
+    this._fire; 
+    this._flush;
 
-  private fire, flush;
-
-  final int modifiers;
-  long timestamp;
-  int id;
-
-  /**
-   * Constructs an event with an "empty" {@link Shortcut}.
-   */
-  Event() {
+    this._modifiers = NO_MODIFIER_MASK;
+    this._timestamp = window.performance.now();
+    this._id = NO_ID;
+    if (modifiers !== null && id !==null) {
+      this._modifiers = modifiers;
+      this._id = id;
+      this._timestamp = window.performance.now();
+    }
+    if (other !== null) {
+      this._modifiers = other.modifiers;
+      this._id = other.id;
+      this._timestamp = window.performance.now();
+      this._fire = other.fire;
+      this._flush = other.flush;
+    }
   }
 
-  /**
-   * Constructs an event taking the given {@code modifiers} as a
-   * {@link Shortcut}.
-   */
-  Event(int modifiers, int id) {
-    }
-
-  Event(Event other) {
-    }
-
-  Event get() {
-    }
+ 
+  get() {
+    return new Event(this);
+  }
 
   /**
    * Same as {@code this.get()} but sets the {@link #flushed()} flag to true. Only agents
@@ -77,7 +77,14 @@ class Event {
    *
    * @see #flushed()
    */
-  Event flush() {
+  flush() {
+    if (fired() || flushed()) {
+      console.log("Warning: event already " + (fired() ? "fired" : "flushed"));
+      return this;
+    }
+    event = this.get();
+    event.flush = true;
+    return event;
   }
 
   /**
@@ -86,7 +93,14 @@ class Event {
    *
    * @see #flushed()
    */
-  Event fire() {
+  fire() {
+    if (fired() || flushed()) {
+      console.log("Warning: event already " + (fired() ? "fired" : "flushed"));
+      return this;
+    }
+    event = this.get();
+    event.fire = true;
+    return event;
   }
 
   /**
@@ -96,7 +110,7 @@ class Event {
    * @see #fired()
    */
   flushed() {
-    
+    return flush;
   }
 
   /**
@@ -106,73 +120,95 @@ class Event {
    * @see #flushed()
    */
   fired() {
-    }
+    return fire;
+  }
 
   /**
    * @return the shortcut encapsulated by this event.
    * @see Shortcut
    */
-  Shortcut shortcut() {
-    }
+  shortcut() {
+    return new Shortcut(modifiers(), id());
+  }
 
   /**
    * @return the modifiers defining the event {@link Shortcut}.
    */
-  int modifiers() {
-    }
+  modifiers() {
+    return modifiers;
+  }
 
   /**
    * Returns the id defining the event's {@link Shortcut}.
    */
-  int id() {
-    }
+  id() {
+    return id;
+  }
 
   /**
    * @return the time at which the event occurs
    */
-  long timestamp() {
-    }
+  timestamp() {
+    return timestamp;
+  }
 
   /**
    * Only {@link remixlab.bias.event.MotionEvent}s may be null.
    */
   isNull() {
-    }
+    return false;
+  }
 
   /**
    * @return true if Shift was down when the event occurs
    */
   isShiftDown() {
-    }
+    return (modifiers & SHIFT) != 0;
+  }
 
   /**
    * @return true if Ctrl was down when the event occurs
    */
   isControlDown() {
-    }
+    return (modifiers & CTRL) != 0;
+  }
 
   /**
    * @return true if Meta was down when the event occurs
    */
   isMetaDown() {
-    }
+    return (modifiers & META) != 0;
+  }
 
   /**
    * @return true if Alt was down when the event occurs
    */
   isAltDown() {
-    }
+    return (modifiers & ALT) != 0;
+  }
 
   /**
    * @return true if AltGraph was down when the event occurs
    */
   isAltGraph() {
-    }
+    return (modifiers & ALT_GRAPH) != 0;  
+  }
 
   /**
    * @param mask of modifiers
    * @return a String listing the event modifiers
    */
-  static String modifiersText(int mask) {    
+  modifiersText(mask) {    
+    if ((ALT & mask) == ALT)
+      r += "ALT";
+    if ((SHIFT & mask) == SHIFT)
+      r += (r.length() > 0) ? "+SHIFT" : "SHIFT";
+    if ((CTRL & mask) == CTRL)
+      r += (r.length() > 0) ? "+CTRL" : "CTRL";
+    if ((META & mask) == META)
+      r += (r.length() > 0) ? "+META" : "META";
+    if ((ALT_GRAPH & mask) == ALT_GRAPH)
+      r += (r.length() > 0) ? "+ALT_GRAPH" : "ALT_GRAPH";
+    return r;  
   }
 }
