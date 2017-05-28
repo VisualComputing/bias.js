@@ -8,27 +8,29 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-package remixlab.bias;
-
 /**
  * Grabbers are means to attach a user-space object to all the
  * {@link Agent}s (see
  * {@link Agent#addGrabber(Grabber)}) through which it's going to be
  * handled. For details, refer to the {@link Agent} documentation.
  */
-interface Grabber {
+export default class Grabber {
   /**
    * Defines the rules to set the grabber as an agent input-grabber.
    *
    * @see Agent#updateTrackedGrabber(Event)
    * @see Agent#inputGrabber()
    */
-  checkIfGrabsInput(Event event);
+  checkIfGrabsInput(event){
+    throw new TypeError('checkIfGrabsInput must be overrided');
+  }
 
   /**
    * Defines how the grabber should react according to the given event.
    *
    * @see Agent#handle(Event)
    */
-  void performInteraction(Event event);
+  performInteraction(event){
+    throw new TypeError('performInteraction must be overrided');
+  }
 }
