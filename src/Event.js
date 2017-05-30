@@ -1,16 +1,3 @@
-/**************************************************************************************
- * bias_tree
- * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
- * @author Jean Pierre Charalambos, http://otrolado.info/
- *
- * All rights reserved. Library that eases the creation of interactive
- * scenes, released under the terms of the GNU Public License v3.0
- * which is available at http://www.gnu.org/licenses/gpl.html
- **************************************************************************************/
-
-
-import KeyEvent event.KeyEvent;
-
 /**
  * The root of all events that are to be handled by an {@link Agent}.
  * Every Event encapsulates a {@link Shortcut}. Gesture initialization and
@@ -35,40 +22,44 @@ import KeyEvent event.KeyEvent;
  * of these mechanisms are available (as it often happens when dealing with specialized,
  * non-default input hardware).
  */
+import Shortcut from './Shortcut';
 
-export NO_MODIFIER_MASK = 0;
-export NO_ID = 0;
-export SHIFT = 1 << 0;
-export CTRL = 1 << 1;
-export META = 1 << 2;
-export ALT = 1 << 3;
-export ALT_GRAPH = 1 << 4;
+export const NO_MODIFIER_MASK = 0;
+export const NO_ID = 0b0;
+export const SHIFT = 0b1;
+export const CTRL = 0b10;
+export const META = 0b100;
+export const ALT = 0b1000;
+export const ALT_GRAPH = 0b10000;
 
 export default class Event {
-  constructor(modifiers, id, other) {
-    // modifier keys
-  
-    this._fire; 
-    this._flush;
-
+  constructor({ modifiers = null, id = null, other = null }) {
+    this._fire = false;
+    this._flush = false;
+    /**
+     * Constructs an event with an "empty" {@link Shortcut}.
+     */
     this._modifiers = NO_MODIFIER_MASK;
-    this._timestamp = window.performance.now();
     this._id = NO_ID;
-    if (modifiers !== null && id !==null) {
+    this._timestamp = window.performance.now();
+
+    /**
+     * Constructs an event taking the given {@code modifiers} as a
+     * {@link Shortcut}.
+     */
+    if (modifiers !== null && id !== null) {
       this._modifiers = modifiers;
       this._id = id;
       this._timestamp = window.performance.now();
-    }
-    if (other !== null) {
-      this._modifiers = other.modifiers;
-      this._id = other.id;
+    } else if (other !== null) {
+      this._modifiers = other._modifiers;
+      this._id = other._id;
       this._timestamp = window.performance.now();
-      this._fire = other.fire;
-      this._flush = other.flush;
+      this._fire = other._fire;
+      this._flush = other._flush;
     }
   }
 
- 
   get() {
     return new Event(this);
   }
@@ -80,12 +71,14 @@ export default class Event {
    * @see #flushed()
    */
   flush() {
-    if (fired() || flushed()) {
-      console.log("Warning: event already " + (fired() ? "fired" : "flushed"));
+    if (this._fire || this._flush) {
+      console.warn(
+        `Warning: event already ${this._fire ? "fired" : "flushed"}`
+      );
       return this;
     }
-    event = this.get();
-    event.flush = true;
+    const event = this.get();
+    event._flush = true;
     return event;
   }
 
@@ -96,12 +89,14 @@ export default class Event {
    * @see #flushed()
    */
   fire() {
-    if (fired() || flushed()) {
-      console.log("Warning: event already " + (fired() ? "fired" : "flushed"));
+    if (this._fire || this._flush) {
+      console.warn(
+        `Warning: event already ${this._fire ? "fired" : "flushed"}`
+      );
       return this;
     }
-    event = this.get();
-    event.fire = true;
+    const event = this.get();
+    event._fire = true;
     return event;
   }
 
@@ -112,7 +107,7 @@ export default class Event {
    * @see #fired()
    */
   flushed() {
-    return flush;
+    return this._flush;
   }
 
   /**
@@ -122,7 +117,7 @@ export default class Event {
    * @see #flushed()
    */
   fired() {
-    return fire;
+    return this._fire;
   }
 
   /**
@@ -130,28 +125,28 @@ export default class Event {
    * @see Shortcut
    */
   shortcut() {
-    return new Shortcut(modifiers(), id());
+    return new Shortcut({ mask: this.modifiers(), id: this.id() });
   }
 
   /**
    * @return the modifiers defining the event {@link Shortcut}.
    */
   modifiers() {
-    return modifiers;
+    return this._modifiers;
   }
 
   /**
    * Returns the id defining the event's {@link Shortcut}.
    */
   id() {
-    return id;
+    return this._id;
   }
 
   /**
    * @return the time at which the event occurs
    */
   timestamp() {
-    return timestamp;
+    return this._timestamp;
   }
 
   /**
@@ -165,52 +160,49 @@ export default class Event {
    * @return true if Shift was down when the event occurs
    */
   isShiftDown() {
-    return (modifiers & SHIFT) != 0;
+    return !!(this._modifiers & SHIFT);
   }
 
   /**
    * @return true if Ctrl was down when the event occurs
    */
   isControlDown() {
-    return (modifiers & CTRL) != 0;
+    return !!(this._modifiers & CTRL);
   }
 
   /**
    * @return true if Meta was down when the event occurs
    */
   isMetaDown() {
-    return (modifiers & META) != 0;
+    return !!(this._modifiers & META);
   }
 
   /**
    * @return true if Alt was down when the event occurs
    */
   isAltDown() {
-    return (modifiers & ALT) != 0;
+    return !!(this._modifiers & ALT);
   }
 
   /**
    * @return true if AltGraph was down when the event occurs
    */
   isAltGraph() {
-    return (modifiers & ALT_GRAPH) != 0;  
+    return !!(this._modifiers & ALT_GRAPH);
   }
 
   /**
    * @param mask of modifiers
    * @return a String listing the event modifiers
    */
-  modifiersText(mask) {    
-    if ((ALT & mask) == ALT)
-      r += "ALT";
-    if ((SHIFT & mask) == SHIFT)
-      r += (r.length() > 0) ? "+SHIFT" : "SHIFT";
-    if ((CTRL & mask) == CTRL)
-      r += (r.length() > 0) ? "+CTRL" : "CTRL";
-    if ((META & mask) == META)
-      r += (r.length() > 0) ? "+META" : "META";
-    if ((ALT_GRAPH & mask) == ALT_GRAPH)
-      r += (r.length() > 0) ? "+ALT_GRAPH" : "ALT_GRAPH";
-    return r;  
+  static modifiersText(mask) {
+    let r = '';
+    if ((ALT & mask) === ALT) r += 'ALT';
+    if ((SHIFT & mask) === SHIFT) r += r.length > 0 ? '+SHIFT' : 'SHIFT';
+    if ((CTRL & mask) === CTRL) r += r.length > 0 ? '+CTRL' : 'CTRL';
+    if ((META & mask) === META) r += r.length > 0 ? '+META' : 'META';
+    if ((ALT_GRAPH & mask) === ALT_GRAPH)
+      r += r.length() > 0 ? '+ALT_GRAPH' : 'ALT_GRAPH';
+    return r;
   }
 }

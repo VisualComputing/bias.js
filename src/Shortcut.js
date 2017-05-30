@@ -8,15 +8,6 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-package remixlab.bias;
-
-import remixlab.bias.event.KeyEvent;
-import remixlab.bias.event.KeyShortcut;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-
 /**
  * Every {@link Event} instance has a shortcut which represents a
  * gesture-{@link #id()}. For instance, the button being dragged and the modifier key
@@ -37,43 +28,32 @@ import java.util.HashMap;
  * {@link KeyShortcut}</li>
  * </ol>
  */
-class Shortcut {
-  final int mask;
-  final int id;
 
+import { NO_MODIFIER_MASK, NO_ID } from './Event';
+
+export default class Shortcut {
   /**
    * Constructs an "empty" shortcut. Same as: {@link #Shortcut(int)} with the integer
    * parameter being NO_NOMODIFIER_MASK.
    */
-  Shortcut() {    
-  }
+  constructor({ mask = null, id = null }) {
+    this._mask = mask || NO_MODIFIER_MASK;
+    this._id = id || NO_ID;
 
-  /**
-   * Defines a shortcut from the given id.
-   *
-   * @param _id gesture-id
-   */
-  Shortcut(int _id) {
+    this.matches = this.matches.bind(this);
   }
-
-  /**
-   * Defines a shortcut from the given modifier mask and id
-   *
-   * @param m modifier mask defining the shortcut
-   */
-  Shortcut(int m, int i) {
-  }
-
   /**
    * Returns the shortcut's modifiers mask.
    */
-  int modifiers() {
+  modifiers() {
+    return this._mask;
   }
 
   /**
    * Returns the shortcut's id.
    */
-  int id() {
+  id() {
+    return this._id;
   }
 
   /**
@@ -81,7 +61,7 @@ class Shortcut {
    *
    * @param other shortcut
    */
-  matches(Shortcut other) {
-    return id() == other.id() && modifiers() == other.modifiers();
+  matches(other) {
+    return this.id() === other.id() && this.modifiers() === other.modifiers();
   }
 }
