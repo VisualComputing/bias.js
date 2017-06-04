@@ -1,20 +1,3 @@
-/**************************************************************************************
- * bias_tree
- * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
- * @author Jean Pierre Charalambos, http://otrolado.info/
- *
- * All rights reserved. Library that eases the creation of interactive
- * scenes, released under the terms of the GNU License v3.0
- * which is available at http://www.gnu.org/licenses/gpl.html
- **************************************************************************************/
-
-package remixlab.bias;
-
-import remixlab.bias.event.MotionEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Agents gather data from different sources --mostly from input devices such touch
  * surfaces or simple mice-- and reduce them into a rather simple but quite 'useful' set
@@ -37,18 +20,18 @@ import java.util.List;
  * {@link #inputGrabber()} may still be set with {@link #setDefaultGrabber(Grabber)} (see
  * also {@link #defaultGrabber()}).
  */
-abstract class Agent {
-  List<Grabber> grabberList;
-  Grabber trackedGrabber, defaultGrabber;
-  boolean agentTrckn;
-  InputHandler handler;
-
+class Agent {
   /**
    * Constructs an Agent and registers is at the given inputHandler.
    */
-  Agent(InputHandler inputHandler) {
+  constructor(inputHandler) {
+    this._grabberList = new Set();
+    this._trackedGrabber = null;
+    this._defaultGrabber = null;
+    this._agentTrckn = true;
+    this._handler = inputHandler;
+    handlre.registerAgent(this);
   }
-
   // 1. Grabbers
 
   /**
@@ -59,8 +42,11 @@ abstract class Agent {
    * @see #hasGrabber(Grabber)
    * @see #grabbers()
    */
-  removeGrabber(Grabber grabber) {    
-    
+  removeGrabber(grabber) {
+    if (this.defaultGrabber() === grabber) this.setDefaultGrabber(null);
+    if (this.trackedGrabber() === grabber) this.resetTrackedGrabber();
+    this._grabberList.delete(grabber);
+    return this._grabberList;
   }
 
   /**
@@ -71,7 +57,10 @@ abstract class Agent {
    * @see #hasGrabber(Grabber)
    * @see #grabbers()
    */
-   void removeGrabbers() {
+  removeGrabbers() {
+    this.setDefaultGrabber(null);
+    this.resetTrackedGrabber();
+    this._grabberList.clear();
   }
 
   /**
@@ -82,7 +71,8 @@ abstract class Agent {
    * @see #hasGrabber(Grabber)
    * @see #removeGrabbers()
    */
-   List<Grabber> grabbers() {    
+  grabbers() {
+    return this._grabberList;
   }
 
   /**
@@ -93,7 +83,8 @@ abstract class Agent {
    * @see #grabbers()
    * @see #removeGrabbers()
    */
-   hasGrabber(Grabber grabber) {
+  hasGrabber(grabber) {
+    return this._grabberList.has(grabber);
   }
 
   /**
@@ -104,8 +95,10 @@ abstract class Agent {
    * @see #grabbers()
    * @see #removeGrabbers()
    */
-  addGrabber(Grabber grabber) {
-
+  addGrabber(grabber) {
+    if (grabber !== null || this._grabberList.has(grabber)) return false;
+    this._grabberList.add(grabber);
+    return true;
   }
 
   /**
@@ -124,8 +117,8 @@ abstract class Agent {
    * @see #handle(Event)
    * @see #updateTrackedGrabber(Event)
    */
-  Event feed() {
-
+  feed() {
+    return null;
   }
 
   /**
@@ -142,8 +135,8 @@ abstract class Agent {
    * @see #handle(Event)
    * @see #updateTrackedGrabber(Event)
    */
-  Event handleFeed() {
-    
+  handleFeed() {
+    return null;
   }
 
   /**
@@ -159,15 +152,15 @@ abstract class Agent {
    * @see #handle(Event)
    * @see #updateTrackedGrabber(Event)
    */
-  Event updateTrackedGrabberFeed() {
-    
+  updateTrackedGrabberFeed() {
+    return null;
   }
 
   /**
    * Returns the {@link InputHandler} this agent is registered to.
    */
-  InputHandler inputHandler() {
-    
+  inputHandler() {
+    return this._handler;
   }
 
   /**
@@ -188,16 +181,44 @@ abstract class Agent {
    * @see #defaultGrabber()
    * @see #inputGrabber()
    */
-  Grabber updateTrackedGrabber(Event event) {    
-    
+  updateTrackedGrabber(event) {
+    if (
+      event == null ||
+      !this.inputHandler().isAgentRegistered(this) ||
+      !this.isTracking()
+    )
+      return trackedGrabber();
+    // We first check if default grabber is tracked,
+    // i.e., default grabber has the highest priority (which is good for
+    // keyboards and doesn't hurt motion grabbers:
+    const dG = defaultGrabber();
+    if (dG != null)
+      if (dG.checkIfGrabsInput(event)) {
+        this._trackedGrabber = dG;
+        return this.trackedGrabber();
+      }
+    // then if tracked grabber remains the matches:
+    const tG = trackedGrabber();
+    if (tG != null)
+      if (tG.checkIfGrabsInput(event)) return this.trackedGrabber();
+    // pick the first otherwise
+    this._trackedGrabber = null;
+    Array.from(this._grabberList).forEach(grabber => {
+      if (grabber != dG && grabber != tG)
+        if (grabber.checkIfGrabsInput(event)) {
+          this._trackedGrabber = grabber;
+          return trackedGrabber();
+        }
+    });
+    return trackedGrabber();
   }
 
   /**
    * Returns the sensitivities used in {@link #handle(Event)} to
    * {@link remixlab.bias.event.MotionEvent#modulate(float[])}.
    */
-  float[] sensitivities(MotionEvent event) {
-    
+  sensitivities(event) {
+    return [1, 1, 1, 1, 1, 1];
   }
 
   /**
@@ -212,8 +233,23 @@ abstract class Agent {
    * @see #inputGrabber()
    * @see #updateTrackedGrabber(Event)
    */
-  handle(Event event) {
- 
+  handle(event) {
+    if (
+      event === null ||
+      inputHandler() === null ||
+      !this._handler.isAgentRegistered(this)
+    )
+      return false;
+    if (event instanceof MotionEvent)
+      if (event.isAbsolute())
+        if (event.isNull() && !event.flushed()) return false;
+    if (event instanceof MotionEvent) event.modulate(this.sensitivities(event));
+    const inputGrabber = this.inputGrabber();
+    if (inputGrabber != null)
+      return this.inputHandler().enqueueEventTuple(
+        new EventGrabberTuple(event, inputGrabber)
+      );
+    return false;
   }
 
   /**
@@ -222,15 +258,15 @@ abstract class Agent {
    *
    * @see #trackedGrabber()
    */
-  Grabber inputGrabber() {
-    
+  inputGrabber() {
+    return this.trackedGrabber() || this.defaultGrabber();
   }
 
   /**
    * Returns true if {@code g} is the agent's {@link #inputGrabber()} and false otherwise.
    */
-  isInputGrabber(Grabber g) {
-    
+  isInputGrabber(grabber) {
+    return this.inputGrabber() === grabber;
   }
 
   /**
@@ -239,7 +275,7 @@ abstract class Agent {
    * You may need to {@link #enableTracking()} first.
    */
   isTracking() {
-    
+    return this._agentTrckn;
   }
 
   /**
@@ -248,8 +284,8 @@ abstract class Agent {
    *
    * @see #disableTracking()
    */
-  void enableTracking() {
-    
+  enableTracking() {
+    this.setTracking(true);
   }
 
   /**
@@ -257,28 +293,33 @@ abstract class Agent {
    *
    * @see #enableTracking()
    */
-  void disableTracking() {
-    
+  disableTracking() {
+    this.setTracking(false);
   }
 
   /**
    * Sets the {@link #isTracking()} value.
    */
-  void setTracking(boolean enable) {
-
+  setTracking(enable) {
+    this._agentTrckn = enable;
+    if (!this.isTracking()) {
+      this._trackedGrabber = null;
+    }
   }
 
   /**
    * Calls {@link #setTracking(boolean)} to toggle the {@link #isTracking()} value.
    */
-  void toggleTracking() {
+  toggleTracking() {
+    this.setTracking(!this.isTracking());
   }
 
   /**
    * Returns the grabber set after {@link #updateTrackedGrabber(Event)} is called. It
    * may be null.
    */
-  Grabber trackedGrabber() {
+  trackedGrabber() {
+    return this._trackedGrabber;
   }
 
   /**
@@ -288,7 +329,8 @@ abstract class Agent {
    * @see #inputGrabber()
    * @see #trackedGrabber()
    */
-  Grabber defaultGrabber() {
+  defaultGrabber() {
+    return this._defaultGrabber;
   }
 
   /**
@@ -296,7 +338,10 @@ abstract class Agent {
    * {@code defaultGrabber() != g1 ? setDefaultGrabber(g1) ? true : setDefaultGrabber(g2) : setDefaultGrabber(g2)}
    * which is ubiquitous among the examples.
    */
-  shiftDefaultGrabber(Grabber g1, Grabber g2) {
+  shiftDefaultGrabber(g1, g2) {
+    return this.defaultGrabber() != g1
+      ? this.setDefaultGrabber(g1) ? true : this.setDefaultGrabber(g2)
+      : this.setDefaultGrabber(g2);
   }
 
   /**
@@ -304,14 +349,25 @@ abstract class Agent {
    * <p>
    * {@link #inputGrabber()}
    */
-  setDefaultGrabber(Grabber grabber) {
-    
+  setDefaultGrabber(grabber) {
+    if (grabber == null) {
+      this._defaultGrabber = null;
+      return true;
+    }
+    if (!this.hasGrabber(grabber)) {
+      console.warn(
+        "To set an Agent default grabber the Grabber should be added into agent first."
+      );
+      return false;
+    }
+    this._defaultGrabber = grabber;
+    return true;
   }
 
   /**
    * Sets the {@link #trackedGrabber()} to {@code null}.
    */
-  void resetTrackedGrabber() {
-    
+  resetTrackedGrabber() {
+    this._trackedGrabber = null;
   }
 }
