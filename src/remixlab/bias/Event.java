@@ -10,8 +10,6 @@
 
 package remixlab.bias;
 
-import remixlab.bias.event.KeyEvent;
-
 /**
  * The root of all events that are to be handled by an {@link Agent}.
  * Every Event encapsulates a {@link Shortcut}. Gesture initialization and
@@ -20,7 +18,7 @@ import remixlab.bias.event.KeyEvent;
  * <p>
  * The following are the main class specializations:
  * {@link remixlab.bias.event.MotionEvent}, {@link remixlab.bias.event.ClickEvent}, and
- * {@link KeyEvent}. Please refer to their documentation for
+ * {@link remixlab.bias.event.KeyEvent}. Please refer to their documentation for
  * details.
  * <p>
  * If you ever need to define you're own event type, derive from this class; and, optional,
