@@ -1,5 +1,5 @@
-import Event, {NO_MODIFIER_MASK} from '../Event';
-import KeyShorcut from '../KeyShorcut';
+import Event from '../Event';
+import KeyShortcut from './KeyShorcut';
 
 /**
  * A key-event is an {@link Event} specialization that
@@ -15,41 +15,44 @@ import KeyShorcut from '../KeyShorcut';
  * KeyEvent</a> to get some VK_* values. Note that Proscene sets them automatically from
  * the platform where the framework is running.
  */
-class KeyEvent extends Event {
+export default class KeyEvent extends Event {
 
   /**
    * Constructs a keyevent with <b>c</b> defining its
    * {@link KeyShortcut}.
    */
-  constructor (props) {
-    if(props.char){
+  constructor({ char = null, modifiers = null, vk = null, other = null }) {
+    if (char !== null) {
       super();
-      this._key = props.char;
-    }
-    if(props.modifiers && props.vk){
-      super(props.modifiers, props.vk);
+      this._key = char;
+    } else if (modifiers !== null && vk !== null) {
+      super({ modifiers, id: vk });
       this._key = '\0';
-    }
-    if(props.vk && !props.modifiers){
-      super(vk);
-      this._vk = '\0';
-    }
-    if(props.other) {
-      super(props.other);
-      this._key = props.other.key();
+    } else if (vk !== null && modifiers === null) {
+      super({ id: vk });
+      this._key = '\0';
+    } else {
+      super({ other });
+      this._key = other.key();
     }
   }
 
 
   get() {
-    return new KeyEvent(this);
+    return new KeyEvent({ other: this });
+  }
+
+  flush() {
+    return super.flush();
+  }
+
+  fire() {
+    return super.fire();
   }
 
   shortcut() {
-    if (this._key == '\0')
-      return new KeyShortcut(this.modifiers(), this.id());
-    else
-      return new KeyShortcut(this.key());
+    if (this._key === '\0') return new KeyShortcut(this.modifiers(), this.id());
+    return new KeyShortcut(this.key());
   }
 
   key() {
