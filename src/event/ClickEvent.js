@@ -1,5 +1,5 @@
-import Event, { NO_MODIFIER_MASk } from "../Event";
-import ClickShortcut from "./ClickShortcut";
+import Event, { NO_MODIFIER_MASk } from '../Event';
+import ClickShortcut from './ClickShortcut';
 
 export default class ClickEvent extends Event {
   constructor({
@@ -8,8 +8,7 @@ export default class ClickEvent extends Event {
     modifiers = NO_MODIFIER_MASk,
     shortcut,
     clicks = 1,
-    other = null
-  }) {
+    other = null }) {
     super({ modifiers, id: shortcut, other });
     this._x = x;
     this._y = y;
@@ -22,7 +21,7 @@ export default class ClickEvent extends Event {
   }
 
   get() {
-    return new ClickEvent(this);
+    return new ClickEvent({ other: this });
   }
 
   flush() {
@@ -41,14 +40,14 @@ export default class ClickEvent extends Event {
    * @return event x coordinate
    */
   x() {
-    return this.x;
+    return this._x;
   }
 
   /**
    * @return event y coordinate
    */
   y() {
-    return this.y;
+    return this._y;
   }
 
   /**
