@@ -1,45 +1,43 @@
-abstract class GrabberObject implements Grabber {
-  /**
-   * Empty constructor.
-   */
-  GrabberObject() {
-  }
+import Agent from './Agent';
+import InputHandler from './InputHandler';
+import KeyEvent from './event/KeyEvent';
+import ClickEvent from './event/ClickEvent';
+import MotionEvent from './event/MotionEvent';
+import DOF1Event from './event/DOF1Event';
+import DOF2Event from './event/DOF2Event';
+import DOF3Event from './event/DOF3Event';
+import DOF6Event from './event/DOF6Event';
 
-  /**
-   * Constructs and adds this grabber to the agent pool.
-   *
-   * @see Agent#grabbers()
-   */
-  GrabberObject(Agent agent) {
-    
-  }
-
-  /**
-   * Constructs and adds this grabber to all agents belonging to the input handler.
-   *
-   * @see InputHandler#agents()
-   */
-  GrabberObject(InputHandler inputHandler) {
-    
-  }
-
+export default class GrabberObject extends Grabber {
   /**
    * Check if this object is the {@link Agent#inputGrabber()} . Returns
    * {@code true} if this object grabs the agent and {@code false} otherwise.
    */
-  boolean grabsInput(Agent agent) {
-    
+  constructor(agentOrInputHandler) {
+    super();
+    if (agentOrInputHandler !== null) agentOrInputHandler.addGrabber(this);
   }
 
   /**
-   * Checks if the frame grabs input from any agent registered at the given input handler.
+   * Checks if the frame grabs input from any agent registered at the given input handler or agent.
    */
-  boolean grabsInput(InputHandler inputHandler) {
+  static grabsInput(agentOrInputHandler) {
+    if (agentOrInputHandler instanceof Agent){
+      return agentOrInputHandler.inputGrabber() === this;
     }
+    if (agentOrInputHandler instanceof InputHandler) {
+      for (let agent of agentOrInputHandler) {
+        if (agentOrInputHandler.inputGrabber() === this) return true;
+      }
+    }
+    return false;
+  }
 
-  @Override
-  void performInteraction(Event event) {
-    }
+  performInteraction(event) {
+    if (event instanceof KeyEvent) this.performInteractionKey(event);
+    if (event instanceof ClickEvent) this.performInteractionClick(event);
+    if (event instanceof MotionEvent) this.performInteractionMotion(event);
+  }
 
   /**
    * Calls performInteraction() on the proper motion event:
@@ -49,54 +47,60 @@ abstract class GrabberObject implements Grabber {
    * Override this method when you want the object to perform an interaction from a
    * {@link remixlab.bias.event.MotionEvent}.
    */
-  void performInteraction(MotionEvent event) {    
+  performInteractionMotion(event) {
+    if (event instanceof DOF1Event) this.performInteractionDOF1(event);
+    if (event instanceof DOF2Event) this.performInteractionDOF2(event);
+    if (event instanceof DOF3Event) this.performInteractionDOF3(event);
+    if (event instanceof DOF6Event) this.performInteractionDOF6(event);
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link KeyEvent}.
    */
-  void performInteraction(KeyEvent event) {
+  performInteractionKey(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link remixlab.bias.event.ClickEvent}.
    */
-  void performInteraction(ClickEvent event) {
+  performInteractionClick(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link remixlab.bias.event.DOF1Event}.
    */
-  void performInteraction(DOF1Event event) {
+  performInteractionDOF1(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link remixlab.bias.event.DOF2Event}.
    */
-  void performInteraction(DOF2Event event) {
+  performInteractionDOF2(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link remixlab.bias.event.DOF3Event}.
    */
-  void performInteraction(DOF3Event event) {
+  performInteractionDOF3(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link remixlab.bias.event.DOF6Event}.
    */
-  void performInteraction(DOF6Event event) {
+  performInteractionDOF6(event) {
   }
 
-  @Override
-  boolean checkIfGrabsInput(Event event) {
-    
+  checkIfGrabsInput(event) {
+    if (event instanceof KeyEvent) return this.checkIfGrabsInputKey(event);
+    if (event instanceof ClickEvent) return this.checkIfGrabsInputClick(event);
+    if (event instanceof MotionEvent) return this.checkIfGrabsInputMotion(event);
+    return false;
   }
 
   /**
@@ -107,50 +111,59 @@ abstract class GrabberObject implements Grabber {
    * Override this method when you want the object to be picked from a
    * {@link KeyEvent}.
    */
-  boolean checkIfGrabsInput(MotionEvent event) {
-    
+  checkIfGrabsInputMotion(event) {
+    if (event instanceof DOF1Event) return this.checkIfGrabsInputDOF1(event);
+    if (event instanceof DOF2Event) return this.checkIfGrabsInputDOF2(event);
+    if (event instanceof DOF3Event) return this.checkIfGrabsInputDOF3(event);
+    if (event instanceof DOF6Event) return this.checkIfGrabsInputDOF6(event);
+    return false;
   }
 
   /**
    * Override this method when you want the object to be picked from a
    * {@link KeyEvent}.
    */
-  boolean checkIfGrabsInput(KeyEvent event) {
+  checkIfGrabsInputKey(event) {
+    return false;
   }
 
   /**
    * Override this method when you want the object to be picked from a
    * {@link remixlab.bias.event.ClickEvent}.
    */
-  boolean checkIfGrabsInput(ClickEvent event) {
-
+  checkIfGrabsInputClick(event) {
+    return false;
   }
 
   /**
    * Override this method when you want the object to be picked from a
    * {@link remixlab.bias.event.DOF1Event}.
    */
-  boolean checkIfGrabsInput(DOF1Event event) {
+  checkIfGrabsInputDOF1(event) {
+    return false;
   }
 
   /**
    * Override this method when you want the object to be picked from a
    * {@link remixlab.bias.event.DOF2Event}.
    */
-  boolean checkIfGrabsInput(DOF2Event event) {
+  checkIfGrabsInputDOF2(event) {
+    return false;
   }
 
   /**
    * Override this method when you want the object to be picked from a
    * {@link remixlab.bias.event.DOF3Event}.
    */
-  boolean checkIfGrabsInput(DOF3Event event) {
+  checkIfGrabsInputDOF3(event) {
+    return false;
   }
 
   /**
    * Override this method when you want the object to be picked from a
    * {@link remixlab.bias.event.DOF6Event}.
    */
-  boolean checkIfGrabsInput(DOF6Event event) {
+  checkIfGrabsInputDOF6(event) {
+    return false;
   }
 }
