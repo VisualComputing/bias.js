@@ -51,8 +51,8 @@ export default class KeyEvent extends Event {
   }
 
   shortcut() {
-    if (this._key === '\0') return new KeyShortcut(this.modifiers(), this.id());
-    return new KeyShortcut(this.key());
+    if (this._key === '\0') return new KeyShortcut({ modifiers: this.modifiers(), id: this.id() });
+    return new KeyShortcut({ key: this.key() });
   }
 
   key() {
