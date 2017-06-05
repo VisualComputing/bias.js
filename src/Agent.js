@@ -1,3 +1,5 @@
+import MotionEvent from './MotionEvent';
+import EventGrabberTuple from './EventGrabberTuple';
 /**
  * Agents gather data from different sources --mostly from input devices such touch
  * surfaces or simple mice-- and reduce them into a rather simple but quite 'useful' set
@@ -20,7 +22,7 @@
  * {@link #inputGrabber()} may still be set with {@link #setDefaultGrabber(Grabber)} (see
  * also {@link #defaultGrabber()}).
  */
-class Agent {
+export default class Agent {
   /**
    * Constructs an Agent and registers is at the given inputHandler.
    */
@@ -30,7 +32,7 @@ class Agent {
     this._defaultGrabber = null;
     this._agentTrckn = true;
     this._handler = inputHandler;
-    handlre.registerAgent(this);
+    this._handler.registerAgent(this);
   }
   // 1. Grabbers
 
@@ -186,31 +188,35 @@ class Agent {
       event == null ||
       !this.inputHandler().isAgentRegistered(this) ||
       !this.isTracking()
-    )
-      return trackedGrabber();
+    ) {
+      return this.trackedGrabber();
+    }
     // We first check if default grabber is tracked,
     // i.e., default grabber has the highest priority (which is good for
     // keyboards and doesn't hurt motion grabbers:
-    const dG = defaultGrabber();
-    if (dG != null)
+    const dG = this.defaultGrabber();
+    if (dG != null) {
       if (dG.checkIfGrabsInput(event)) {
         this._trackedGrabber = dG;
         return this.trackedGrabber();
       }
+    }
     // then if tracked grabber remains the matches:
-    const tG = trackedGrabber();
-    if (tG != null)
+    const tG = this.trackedGrabber();
+    if (tG != null) {
       if (tG.checkIfGrabsInput(event)) return this.trackedGrabber();
+    }
     // pick the first otherwise
     this._trackedGrabber = null;
-    Array.from(this._grabberList).forEach(grabber => {
-      if (grabber != dG && grabber != tG)
+    for (const grabber of this._grabberList) {
+      if (grabber !== dG && grabber !== tG) {
         if (grabber.checkIfGrabsInput(event)) {
           this._trackedGrabber = grabber;
-          return trackedGrabber();
+          break;
         }
-    });
-    return trackedGrabber();
+      }
+    }
+    return this.trackedGrabber();
   }
 
   /**
@@ -236,19 +242,28 @@ class Agent {
   handle(event) {
     if (
       event === null ||
-      inputHandler() === null ||
+      this._inputHandler() === null ||
       !this._handler.isAgentRegistered(this)
-    )
+    ) {
       return false;
-    if (event instanceof MotionEvent)
-      if (event.isAbsolute())
-        if (event.isNull() && !event.flushed()) return false;
-    if (event instanceof MotionEvent) event.modulate(this.sensitivities(event));
+    }
+    if (
+      event instanceof MotionEvent &&
+      event.isAbsolute() &&
+      event.isNull() &&
+      !event.flushed()
+    ) {
+      return false;
+    }
+    if (event instanceof MotionEvent) {
+      event.modulate(this.sensitivities(event));
+    }
     const inputGrabber = this.inputGrabber();
-    if (inputGrabber != null)
+    if (inputGrabber != null) {
       return this.inputHandler().enqueueEventTuple(
         new EventGrabberTuple(event, inputGrabber)
       );
+    }
     return false;
   }
 

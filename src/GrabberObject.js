@@ -1,29 +1,3 @@
-/**************************************************************************************
- * bias_tree
- * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
- * @author Jean Pierre Charalambos, http://otrolado.info/
- *
- * All rights reserved. Library that eases the creation of interactive
- * scenes, released under the terms of the GNU Public License v3.0
- * which is available at http://www.gnu.org/licenses/gpl.html
- **************************************************************************************/
-
-package remixlab.bias;
-
-import remixlab.bias.event.*;
-
-/**
- * {@link Grabber} object which eases third-party implementation of the
- * {@link Grabber} interface.
- * <p>
- * Based on the concrete event type, this model object splits the
- * {@link #checkIfGrabsInput(Event)} and the {@link #performInteraction(Event)}
- * methods into more specific versions of them, e.g.,
- * {@link #checkIfGrabsInput(ClickEvent)}, {@link #checkIfGrabsInput(DOF3Event)},
- * {@link #performInteraction(DOF6Event)} , {@link #performInteraction(KeyEvent)} and
- * so on. Thus allowing implementations of this abstract GrabberObject to override only
- * those method signatures that might be of their interest.
- */
 abstract class GrabberObject implements Grabber {
   /**
    * Empty constructor.
