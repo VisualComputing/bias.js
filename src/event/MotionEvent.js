@@ -28,7 +28,7 @@ export default class MotionEvent extends Event {
     this._delay = 0;
     this._distance = 0;
     this._speed = 0;
-    this.rel = false;
+    this._rel = false;
     if (other !== null) {
       this._delay = other._delay;
       this._distance = other._distance;
