@@ -24,13 +24,13 @@
  */
 import Shortcut from './Shortcut';
 
+export const NO_ID = 0;
 export const NO_MODIFIER_MASK = 0;
-export const NO_ID = 0b0;
-export const SHIFT = 0b1;
-export const CTRL = 0b10;
-export const META = 0b100;
-export const ALT = 0b1000;
-export const ALT_GRAPH = 0b10000;
+export const SHIFT            = 0b1;
+export const CTRL             = 0b10;
+export const META             = 0b100;
+export const ALT              = 0b1000;
+export const ALT_GRAPH        = 0b10000;
 
 export default class Event {
   constructor({ modifiers = null, id = null, other = null }) {
@@ -61,7 +61,7 @@ export default class Event {
   }
 
   get() {
-    return new Event(this);
+    return new Event({ other: this });
   }
 
   /**
@@ -72,9 +72,7 @@ export default class Event {
    */
   flush() {
     if (this._fire || this._flush) {
-      console.warn(
-        `Warning: event already ${this._fire ? "fired" : "flushed"}`
-      );
+      console.warn(`Warning: event already ${this._fire ? 'fired' : 'flushed'}`);
       return this;
     }
     const event = this.get();
@@ -90,9 +88,7 @@ export default class Event {
    */
   fire() {
     if (this._fire || this._flush) {
-      console.warn(
-        `Warning: event already ${this._fire ? "fired" : "flushed"}`
-      );
+      console.warn(`Warning: event already ${this._fire ? 'fired' : 'flushed'}`);
       return this;
     }
     const event = this.get();
