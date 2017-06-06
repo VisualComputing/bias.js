@@ -1,5 +1,5 @@
 import Event from '../Event';
-import KeyShortcut from './KeyShorcut';
+import KeyShortcut from './KeyShortcut';
 
 /**
  * A key-event is an {@link Event} specialization that

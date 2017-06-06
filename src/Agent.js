@@ -1,4 +1,4 @@
-import MotionEvent from './MotionEvent';
+import MotionEvent from './event/MotionEvent';
 import EventGrabberTuple from './EventGrabberTuple';
 /**
  * Agents gather data from different sources --mostly from input devices such touch
