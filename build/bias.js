@@ -274,6 +274,205 @@ class Event {
 }
 
 /**
+ * Base class of all DOF_n_Events: {@link Event}s defined from
+ * DOFs (degrees-of-freedom).
+ * <p>
+ * MotionEvents may be relative or absolute (see {@link #isRelative()}, {@link #isAbsolute()})
+ * depending whether or not they're constructed from a previous MotionEvent. While
+ * relative motion events have {@link #distance()}, {@link #speed()}, and
+ * {@link #delay()}, absolute motion events don't.
+ */
+class MotionEvent extends Event {
+  constructor({ modifiers = null, id = NO_ID, other = null }) {
+    if ((modifiers === null, id === null, other === null)) {
+      super();
+    } else if (other !== null) {
+      super(other);
+    } else if (id === null) {
+      super(modifiers, NO_ID);
+    } else {
+      super(modifiers, id);
+    }
+    this._delay = 0;
+    this._distance = 0;
+    this._speed = 0;
+    this._rel = false;
+    if (other !== null) {
+      this._delay = other._delay;
+      this._distance = other._distance;
+      this._speed = other._speed;
+      this._rel = other._rel;
+    }
+  }
+
+  get() {
+    return new MotionEvent(this);
+  }
+
+  flush() {
+    super.flush();
+  }
+
+  fire() {
+    super.fire();
+  }
+
+  /**
+   * Modulate the event dofs according to {@code sens}. Only meaningful if the event
+   * {@link #isAbsolute()}.
+   */
+  modulate(sens) {}
+
+  /**
+   * Returns the delay between two consecutive motion events. Meaningful only if the event
+   * {@link #isRelative()}.
+   */
+  delay() {
+    return this._delay;
+  }
+
+  /**
+   * Returns the distance between two consecutive motion events. Meaningful only if the
+   * event {@link #isRelative()}.
+   */
+  distance() {
+    return this._distance;
+  }
+
+  /**
+   * Returns the speed between two consecutive motion events. Meaningful only if the event
+   * {@link #isRelative()}.
+   */
+  speed() {
+    return this._speed;
+  }
+
+  /**
+   * Returns true if the motion event is relative, i.e., it has been built from a previous
+   * motion event.
+   */
+  isRelative() {
+    // return distance() != 0;
+    return this._rel;
+  }
+
+  /**
+   * Returns true if the motion event is absolute, i.e., it hasn't been built from a
+   * previous motion event.
+   */
+  isAbsolute() {
+    return !this._isRelative();
+  }
+
+  /**
+   * Sets the event's previous event to build a relative event.
+   */
+  setPreviousEvent(prevEvent) {
+    this._rel = true;
+    // makes sense only if derived classes call it
+    if (prevEvent != null) {
+      if (prevEvent.id() === this.id()) {
+        this._delay = this.timestamp() - prevEvent.timestamp();
+        if (this._delay === 0) this._speed = this._distance;
+        else this._speed = this._distance / this._delay;
+      }
+    }
+  }
+
+  /**
+   * Returns a {@link remixlab.bias.event.DOF1Event} from the MotionEvent x-coordinate if
+   * {@code fromX} is {@code true} and from the y-coordinate otherwise.
+   */
+  static dof1Event(event, fromX = true) {
+    if (event instanceof DOF1Event) return event;
+    if (event instanceof DOF2Event) return event.dof1Event(fromX);
+    if (event instanceof DOF3Event) return event.dof2Event().dof1Event(fromX);
+    if (event instanceof DOF6Event) {
+      return event.dof3Event(fromX).dof2Event().dof1Event(fromX);
+    }
+    return null;
+  }
+
+
+  /**
+   * Returns a {@link remixlab.bias.event.DOF2Event} from the MotionEvent x-coordinate if
+   * {@code fromX} is {@code true} and from the y-coordinate otherwise.
+   */
+  static dof2Event(event, fromX = true) {
+    if (event instanceof DOF1Event) return null;
+    if (event instanceof DOF2Event) return event;
+    if (event instanceof DOF3Event) return event.dof2Event();
+    if (event instanceof DOF6Event) return event.dof3Event(fromX).dof2Event();
+    return null;
+  }
+
+  /**
+   * Returns a {@link remixlab.bias.event.DOF3Event} from the MotionEvent
+   * translation-coordinates if {@code fromTranslation} is {@code true} and from the
+   * rotation-coordinate otherwise.
+   */
+  static dof3Event(event, fromTranslation = true) {
+    if (event instanceof DOF1Event) return null;
+    if (event instanceof DOF2Event) return null;
+    if (event instanceof DOF3Event) return event;
+    if (event instanceof DOF6Event) return event.dof3Event(fromTranslation);
+    return null;
+  }
+
+  /**
+   * Returns a {@link remixlab.bias.event.DOF6Event} if the MotionEvent {@code instanceof}
+   * {@link remixlab.bias.event.DOF6Event} and null otherwise..
+   */
+  static dof6Event(event) {
+    if (event instanceof DOF6Event) return event;
+    return null;
+  }
+
+  /**
+   * @return Euclidean distance between points
+   *
+   */
+  static distance(...args) {
+    if (args.length === 4) return this.distance2(...args);
+    if (args.length === 6) return this.distance3(...args);
+    if (args.length === 12) return this.distance6(...args);
+    return 0;
+  }
+
+  /**
+   * @return Euclidean distance between points (x1,y1) and (x2,y2).
+   *
+   */
+  static distance2(x1, y1, x2, y2) {
+    return Math.sqrt(
+      ((x2 - x1) ** 2) +
+      ((y2 - y1) ** 2));
+  }
+  /**
+   * @return Euclidean distance between points (x1,y1,z1) and (x2,y2,z2).
+   */
+  static distance3(x1, y1, z1, x2, y2, z2) {
+    return Math.sqrt(
+      ((x2 - x1) ** 2) +
+      ((y2 - y1) ** 2) +
+      ((z2 - z1) ** 2));
+  }
+
+  /**
+   * @return Euclidean distance between points (x1,y1,z1,rx1,y1,rz1) and
+   * (x2,y2,z2,rx2,y2,rz2).
+   */
+  static distance6(x1, y1, z1, rx1, ry1, rz1, x2, y2, z2, rx2, ry2, rz2) {
+    return Math.sqrt(
+      ((x2 - x1) ** 2) +
+      ((y2 - y1) ** 2) +
+      ((z2 - z1) ** 2) +
+      ((rx2 - rx1) ** 2) +
+      ((ry2 - ry1) ** 2) +
+      ((rz2 - rz1) ** 2));
+  }
+}
+/**
  * A {@link remixlab.bias.event.MotionEvent} with one degree of freedom ( {@link #x()}).
  */
 class DOF1Event extends MotionEvent {
@@ -1029,205 +1228,6 @@ class DOF6Event extends MotionEvent {
   }
 }
 
-/**
- * Base class of all DOF_n_Events: {@link Event}s defined from
- * DOFs (degrees-of-freedom).
- * <p>
- * MotionEvents may be relative or absolute (see {@link #isRelative()}, {@link #isAbsolute()})
- * depending whether or not they're constructed from a previous MotionEvent. While
- * relative motion events have {@link #distance()}, {@link #speed()}, and
- * {@link #delay()}, absolute motion events don't.
- */
-class MotionEvent extends Event {
-  constructor({ modifiers = null, id = NO_ID, other = null }) {
-    if ((modifiers === null, id === null, other === null)) {
-      super();
-    } else if (other !== null) {
-      super(other);
-    } else if (id === null) {
-      super(modifiers, NO_ID);
-    } else {
-      super(modifiers, id);
-    }
-    this._delay = 0;
-    this._distance = 0;
-    this._speed = 0;
-    this._rel = false;
-    if (other !== null) {
-      this._delay = other._delay;
-      this._distance = other._distance;
-      this._speed = other._speed;
-      this._rel = other._rel;
-    }
-  }
-
-  get() {
-    return new MotionEvent(this);
-  }
-
-  flush() {
-    super.flush();
-  }
-
-  fire() {
-    super.fire();
-  }
-
-  /**
-   * Modulate the event dofs according to {@code sens}. Only meaningful if the event
-   * {@link #isAbsolute()}.
-   */
-  modulate(sens) {}
-
-  /**
-   * Returns the delay between two consecutive motion events. Meaningful only if the event
-   * {@link #isRelative()}.
-   */
-  delay() {
-    return this._delay;
-  }
-
-  /**
-   * Returns the distance between two consecutive motion events. Meaningful only if the
-   * event {@link #isRelative()}.
-   */
-  distance() {
-    return this._distance;
-  }
-
-  /**
-   * Returns the speed between two consecutive motion events. Meaningful only if the event
-   * {@link #isRelative()}.
-   */
-  speed() {
-    return this._speed;
-  }
-
-  /**
-   * Returns true if the motion event is relative, i.e., it has been built from a previous
-   * motion event.
-   */
-  isRelative() {
-    // return distance() != 0;
-    return this._rel;
-  }
-
-  /**
-   * Returns true if the motion event is absolute, i.e., it hasn't been built from a
-   * previous motion event.
-   */
-  isAbsolute() {
-    return !this._isRelative();
-  }
-
-  /**
-   * Sets the event's previous event to build a relative event.
-   */
-  setPreviousEvent(prevEvent) {
-    this._rel = true;
-    // makes sense only if derived classes call it
-    if (prevEvent != null) {
-      if (prevEvent.id() === this.id()) {
-        this._delay = this.timestamp() - prevEvent.timestamp();
-        if (this._delay === 0) this._speed = this._distance;
-        else this._speed = this._distance / this._delay;
-      }
-    }
-  }
-
-  /**
-   * Returns a {@link remixlab.bias.event.DOF1Event} from the MotionEvent x-coordinate if
-   * {@code fromX} is {@code true} and from the y-coordinate otherwise.
-   */
-  static dof1Event(event, fromX = true) {
-    if (event instanceof DOF1Event) return event;
-    if (event instanceof DOF2Event) return event.dof1Event(fromX);
-    if (event instanceof DOF3Event) return event.dof2Event().dof1Event(fromX);
-    if (event instanceof DOF6Event) {
-      return event.dof3Event(fromX).dof2Event().dof1Event(fromX);
-    }
-    return null;
-  }
-
-
-  /**
-   * Returns a {@link remixlab.bias.event.DOF2Event} from the MotionEvent x-coordinate if
-   * {@code fromX} is {@code true} and from the y-coordinate otherwise.
-   */
-  static dof2Event(event, fromX = true) {
-    if (event instanceof DOF1Event) return null;
-    if (event instanceof DOF2Event) return event;
-    if (event instanceof DOF3Event) return event.dof2Event();
-    if (event instanceof DOF6Event) return event.dof3Event(fromX).dof2Event();
-    return null;
-  }
-
-  /**
-   * Returns a {@link remixlab.bias.event.DOF3Event} from the MotionEvent
-   * translation-coordinates if {@code fromTranslation} is {@code true} and from the
-   * rotation-coordinate otherwise.
-   */
-  static dof3Event(event, fromTranslation = true) {
-    if (event instanceof DOF1Event) return null;
-    if (event instanceof DOF2Event) return null;
-    if (event instanceof DOF3Event) return event;
-    if (event instanceof DOF6Event) return event.dof3Event(fromTranslation);
-    return null;
-  }
-
-  /**
-   * Returns a {@link remixlab.bias.event.DOF6Event} if the MotionEvent {@code instanceof}
-   * {@link remixlab.bias.event.DOF6Event} and null otherwise..
-   */
-  static dof6Event(event) {
-    if (event instanceof DOF6Event) return event;
-    return null;
-  }
-
-  /**
-   * @return Euclidean distance between points
-   *
-   */
-  static distance(...args) {
-    if (args.length === 4) return this.distance2(...args);
-    if (args.length === 6) return this.distance3(...args);
-    if (args.length === 12) return this.distance6(...args);
-    return 0;
-  }
-
-  /**
-   * @return Euclidean distance between points (x1,y1) and (x2,y2).
-   *
-   */
-  static distance2(x1, y1, x2, y2) {
-    return Math.sqrt(
-      ((x2 - x1) ** 2) +
-      ((y2 - y1) ** 2));
-  }
-  /**
-   * @return Euclidean distance between points (x1,y1,z1) and (x2,y2,z2).
-   */
-  static distance3(x1, y1, z1, x2, y2, z2) {
-    return Math.sqrt(
-      ((x2 - x1) ** 2) +
-      ((y2 - y1) ** 2) +
-      ((z2 - z1) ** 2));
-  }
-
-  /**
-   * @return Euclidean distance between points (x1,y1,z1,rx1,y1,rz1) and
-   * (x2,y2,z2,rx2,y2,rz2).
-   */
-  static distance6(x1, y1, z1, rx1, ry1, rz1, x2, y2, z2, rx2, ry2, rz2) {
-    return Math.sqrt(
-      ((x2 - x1) ** 2) +
-      ((y2 - y1) ** 2) +
-      ((z2 - z1) ** 2) +
-      ((rx2 - rx1) ** 2) +
-      ((ry2 - ry1) ** 2) +
-      ((rz2 - rz1) ** 2));
-  }
-}
 
 class EventGrabberTuple {
 
@@ -1658,94 +1658,6 @@ class Agent {
   }
 }
 
-class ClickShortcut extends Shortcut {
-  /**
-   * Defines a click shortcut from the given gesture-id, modifier mask, and number of
-   * clicks.
-   *
-   * @param m  modifier mask
-   * @param id id
-   * @param c  bumber of clicks
-   */
-  constructor({ modifiers = NO_MODIFIER_MASk, id = null, clicks = 1 }) {
-    super(modifiers, id);
-    this._numberOfClicks = 1;
-    if (clicks <= 0) this._numberOfClicks = 1;
-    else this._numberOfClicks = clicks;
-  }
-
-  /**
-   * Returns the click-shortcut click count.
-   */
-  clickCount() {
-    return this._numberOfClicks;
-  }
-
-  matches(other) {
-    if (other instanceof ClickShortcut) {
-      return super.matches(other) && this.clickCount() === other.clickCount();
-    }
-    return false;
-  }
-}
-
-class ClickEvent extends Event {
-  constructor({
-    x = 0,
-    y = 0,
-    modifiers = NO_MODIFIER_MASK,
-    shortcut,
-    clicks = 1,
-    other = null }) {
-    super({ modifiers, id: shortcut, other });
-    this._x = x;
-    this._y = y;
-    this._numberOfClicks = clicks;
-    if (other !== null) {
-      this._x = other._x;
-      this._y = other._y;
-      this._numberOfClicks = other._numberOfClicks;
-    }
-  }
-
-  get() {
-    return new ClickEvent({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
-  }
-
-  shortcut() {
-    return new ClickShortcut(this.modifiers(), this.id(), this.clickCount());
-  }
-
-  /**
-   * @return event x coordinate
-   */
-  x() {
-    return this._x;
-  }
-
-  /**
-   * @return event y coordinate
-   */
-  y() {
-    return this._y;
-  }
-
-  /**
-   * @return event number of clicks
-   */
-  clickCount() {
-    return this._numberOfClicks;
-  }
-}
-
 /**
  * This class represents {@link KeyEvent} shortcuts.
  * <p>
@@ -1844,6 +1756,94 @@ class KeyEvent extends Event {
 
   key() {
     return this._key;
+  }
+}
+
+class ClickShortcut extends Shortcut$1 {
+  /**
+   * Defines a click shortcut from the given gesture-id, modifier mask, and number of
+   * clicks.
+   *
+   * @param m  modifier mask
+   * @param id id
+   * @param c  bumber of clicks
+   */
+  constructor({ modifiers = NO_MODIFIER_MASk, id = null, clicks = 1 }) {
+    super(modifiers, id);
+    this._numberOfClicks = 1;
+    if (clicks <= 0) this._numberOfClicks = 1;
+    else this._numberOfClicks = clicks;
+  }
+
+  /**
+   * Returns the click-shortcut click count.
+   */
+  clickCount() {
+    return this._numberOfClicks;
+  }
+
+  matches(other) {
+    if (other instanceof ClickShortcut) {
+      return super.matches(other) && this.clickCount() === other.clickCount();
+    }
+    return false;
+  }
+}
+
+class ClickEvent extends Event {
+  constructor({
+    x = 0,
+    y = 0,
+    modifiers = NO_MODIFIER_MASK,
+    shortcut,
+    clicks = 1,
+    other = null }) {
+    super({ modifiers, id: shortcut, other });
+    this._x = x;
+    this._y = y;
+    this._numberOfClicks = clicks;
+    if (other !== null) {
+      this._x = other._x;
+      this._y = other._y;
+      this._numberOfClicks = other._numberOfClicks;
+    }
+  }
+
+  get() {
+    return new ClickEvent({ other: this });
+  }
+
+  flush() {
+    return super.flush();
+  }
+
+  fire() {
+    return super.fire();
+  }
+
+  shortcut() {
+    return new ClickShortcut(this.modifiers(), this.id(), this.clickCount());
+  }
+
+  /**
+   * @return event x coordinate
+   */
+  x() {
+    return this._x;
+  }
+
+  /**
+   * @return event y coordinate
+   */
+  y() {
+    return this._y;
+  }
+
+  /**
+   * @return event number of clicks
+   */
+  clickCount() {
+    return this._numberOfClicks;
   }
 }
 
@@ -1950,9 +1950,10 @@ class InputHandler {
       agent.handle(
         agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
     }
-    while (!this._eventTupleQueue.length > 0) {
+    while (this._eventTupleQueue.size > 0) {
       const eventTupleArray = Array.from(this._eventTupleQueue);
-      const eventTuple = eventTupleQueue.shift();
+      console.log(eventTupleArray);
+      const eventTuple = eventTupleArray.shift();
       eventTuple.perform();
       this._eventTupleQueue = Set(eventTupleArray);
     }
@@ -2109,7 +2110,7 @@ class InputHandler {
   }
 }
 
-class GrabberObject extends Grabber {
+class GrabberObject extends Grabber$1 {
   /**
    * Check if this object is the {@link Agent#inputGrabber()} . Returns
    * {@code true} if this object grabs the agent and {@code false} otherwise.
