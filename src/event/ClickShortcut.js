@@ -1,4 +1,4 @@
-import { NO_MODIFIER_MASk } from "../Event";
+import { NO_MODIFIER_MASK } from "../Event";
 
 export default class ClickShortcut extends Shortcut {
   /**

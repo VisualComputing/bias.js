@@ -1,11 +1,11 @@
-import Event, { NO_MODIFIER_MASk } from '../Event';
+import Event, { NO_MODIFIER_MASK } from '../Event';
 import ClickShortcut from './ClickShortcut';
 
 export default class ClickEvent extends Event {
   constructor({
     x = 0,
     y = 0,
-    modifiers = NO_MODIFIER_MASk,
+    modifiers = NO_MODIFIER_MASK,
     shortcut,
     clicks = 1,
     other = null }) {
