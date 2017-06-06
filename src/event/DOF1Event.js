@@ -25,12 +25,12 @@ export default class DOF1Event extends MotionEvent {
       this._dx = x;
     } else if (dx !== null && modifiers !== null && id !== null) {
       super({ modifiers, id });
-      this.dx = dx;
       this._x = x;
+      this.dx = dx;
     } else {
       super();
-      this.dx = dx;
       this._x = x;
+      this.dx = dx;
     }
   }
 

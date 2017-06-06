@@ -1,26 +1,18 @@
 import MotionEvent from './MotionEvent';
-import DOF1Event from './DOF1Event';
-
+import DOF2Event from './DOF2Event';
 /**
- * A {@link remixlab.bias.event.MotionEvent} with two degrees-of-freedom ( {@link #x()}
- * and {@link #y()}).
+ * A {@link remixlab.bias.event.MotionEvent} with three degrees-of-freedom ( {@link #x()},
+ * {@link #y()} and {@link #z()} ).
  */
-export default class DOF2Event extends MotionEvent {
-  /**
-   * Construct an absolute event from the given dof's and modifiers.
-   *
-   * @param x
-   * @param y
-   * @param dx
-   * @param dy
-   * @param modifiers
-   * @param id
-   */
+export default class DOF3Event extends MotionEvent {
+
   constructor({
     x = 0,
     y = 0,
+    z = 0,
     dx = 0,
     dy = 0,
+    dz = 0,
     modifiers = null,
     id = null,
     prevEvent = null,
@@ -31,30 +23,38 @@ export default class DOF2Event extends MotionEvent {
       this._dx = other.dx;
       this._y = other.y;
       this._dy = other.dy;
+      this._z = other.z;
+      this._dz = other.dz;
     } else if (prevEvent !== null) {
       super({ modifiers, id });
       this.setPreviousEvent(prevEvent);
       this._x = x;
       this._y = y;
+      this._z = z;
       this._dx = dx;
       this._dy = dy;
-    } else if (dx !== null && dy !== null && modifiers !== null && id !== null) {
+      this._dz = dz;
+    } else if (dx !== null && dy !== null && dz !== null && modifiers !== null && id !== null) {
       super({ modifiers, id });
       this._x = x;
       this._y = y;
+      this._z = z;
       this._dx = dx;
       this._dy = dy;
+      this._dz = dz;
     } else {
       super();
       this._x = x;
       this._y = y;
+      this._z = z;
       this._dx = dx;
       this._dy = dy;
+      this._dz = dz;
     }
   }
 
   get() {
-    return new DOF2Event(this);
+    return new DOF3Event(this);
   }
 
   flush() {
@@ -68,16 +68,20 @@ export default class DOF2Event extends MotionEvent {
   setPreviousEvent(prevEvent) {
     this._rel = true;
     if (prevEvent != null) {
-      if (prevEvent instanceof DOF2Event && prevEvent.id() === this.id()) {
+      if (prevEvent instanceof DOF3Event && prevEvent.id() === this.id()) {
         this._dx = this.x() - prevEvent.x();
         this._dy = this.y() - prevEvent.y();
-        this._distance = MotionEvent.distance(this._x, this._y, prevEvent.x(), prevEvent.y());
+        this._dz = this.z() - prevEvent.z();
+        this._distance = MotionEvent.distance(
+            this._x, this._y, this._z,
+            prevEvent.x(), prevEvent.y(), prevEvent.z());
         this._delay = this.timestamp() - prevEvent.timestamp();
         if (this._delay === 0) this._speed = this._distance;
         else this._speed = this._distance / this._delay;
       }
     }
   }
+
 
   /**
    * @return dof-1, only meaningful if the event {@link #isRelative()}
@@ -121,46 +125,60 @@ export default class DOF2Event extends MotionEvent {
     return this.y() - this.dy();
   }
 
+  /**
+   * @return dof-3, only meaningful if the event {@link #isRelative()}
+   */
+  z() {
+    return this._z;
+  }
+
+  /**
+   * @return dof-3 delta
+   */
+  dz() {
+    return this._dz;
+  }
+
+  /**
+   * @return previous dof-3, only meaningful if the event {@link #isRelative()}
+   */
+  prevZ() {
+    return this.z() - this.dz();
+  }
+
   modulate(sens) {
     if (sens !== null) {
-      if (sens.length >= 2 && this.isAbsolute()) {
+      if (sens.length >= 3 && this.isAbsolute()) {
         this._dx = this._dx * sens[0];
         this._dy = this._dy * sens[1];
+        this._dz = this._dz * sens[2];
       }
     }
   }
 
   isNull() {
-    if (this.dx() === 0 && this.dy() === 0) return true;
+    if (this.dx() === 0 && this.dy() === 0 && this.dz() === 0) return true;
     return false;
   }
 
   /**
-   * Reduces the event to a {@link remixlab.bias.event.DOF1Event} (lossy reduction).
-   *
-   * @param fromX if true keeps dof-1, else keeps dof-2
+   * Reduces the event to a {@link remixlab.bias.event.DOF2Event} (lossy reduction). Keeps
+   * dof-1 and dof-2 and discards dof-3.
    */
-  dof1Event(fromX = true) {
-    let pe1;
-    let e1;
-    if (fromX) {
-      if (this.isRelative()) {
-        pe1 = new DOF1Event(null, this.prevX(), this.modifiers(), this.id());
-        e1 = new DOF1Event(pe1, this.x(), this.modifiers(), this.id());
-      } else {
-        e1 = new DOF1Event(this.dx(), this.modifiers(), this.id());
-      }
-    } else if (this.isRelative()) {
-      pe1 = new DOF1Event(null, this.prevY(), this.modifiers(), this.id());
-      e1 = new DOF1Event(pe1, this.y(), this.modifiers(), this.id());
+  dof2Event() {
+    let pe2;
+    let e2;
+    if (this.isRelative()) {
+      pe2 = new DOF2Event(null, this.prevX(), this.prevY(), this.modifiers(), this.id());
+      e2 = new DOF2Event(pe2, this.x(), this.y(), this.modifiers(), this.id());
     } else {
-      e1 = new DOF1Event(this.dy(), this.modifiers(), this.id());
+      e2 = new DOF2Event(this.dx(), this.dy(), this.modifiers(), this.id());
     }
-    e1._delay = this.delay();
-    e1._speed = this.speed();
-    e1._distance = this.distance();
-    if (this.fired()) return e1.fire();
-    else if (this.flushed()) return e1.flush();
-    return e1;
+    e2._delay = this.delay();
+    e2._speed = this.speed();
+    e2._distance = this.distance();
+    if (this.fired()) return e2.fire();
+    else if (this.flushed()) return e2.flush();
+    return e2;
   }
 }
