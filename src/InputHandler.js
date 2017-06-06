@@ -1,19 +1,3 @@
-/**************************************************************************************
- * bias_tree
- * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
- * @author Jean Pierre Charalambos, http://otrolado.info/
- *
- * All rights reserved. Library that eases the creation of interactive
- * scenes, released under the terms of the GNU Public License v3.0
- * which is available at http://www.gnu.org/licenses/gpl.html
- **************************************************************************************/
-
-package remixlab.bias;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * The InputHandler object is the high level package handler which holds a collection of
  * {@link #agents()}, and an event dispatcher queue of
@@ -28,12 +12,11 @@ import java.util.List;
  * your main event (drawing) loop for that to take effect (like it's done in
  * <b>dandelion</b> by the <b>AbstractScene.postDraw()</b> method).
  */
-class InputHandler {
-  // D E V I C E S & E V E N T S
-  List<Agent> agents;
-  LinkedList<EventGrabberTuple> eventTupleQueue;
-
-  InputHandler() {
+export default class InputHandler {
+  constructor() {
+    // D E V I C E S & E V E N T S
+    this._agents = new Set();
+    this._eventTupleQueue = new Set();
   }
 
   /**
@@ -59,100 +42,146 @@ class InputHandler {
    * @see Agent#updateTrackedGrabberFeed()
    * @see Agent#handleFeed()
    */
-  void handle() {
+  handle() {
     // 1. Agents
+    for (const agent of this._agents) {
+      agent.updateTrackedGrabber(
+        agent.updateTrackedGrabberFeed() != null
+          ? agent.updateTrackedGrabberFeed()
+          : agent.feed());
+      agent.handle(
+        agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
+    }
+    while (!this._eventTupleQueue.length > 0) {
+      const eventTupleArray = Array.from(this._eventTupleQueue);
+      const eventTuple = eventTupleQueue.shift();
+      eventTuple.perform();
+      this._eventTupleQueue = Set(eventTupleArray);
+    }
   }
 
   /**
    * Calls {@link Agent#addGrabber(Grabber)} on registered
    * {@link #agents()}.
    */
-  void addGrabber(Grabber grabber) {
+  addGrabber(grabber) {
+    for (const agent of this._agents) {
+      agent.addGrabber(grabber);
+    }
   }
 
   /**
    * Calls {@link Agent#removeGrabber(Grabber)} on registered
    * {@link #agents()}.
    */
-  void removeGrabber(Grabber grabber) {
+  removeGrabber(grabber) {
+    for (const agent of this._agents) {
+      agent.removeGrabber(grabber);
+    }
   }
 
   /**
    * Calls {@link Agent#removeGrabbers()} on registered
    * {@link #agents()}.
    */
-  void removeGrabbers() {
+  removeGrabbers() {
+    for (const agent of this._agents) {
+      agent.removeGrabbers();
+    }
   }
 
   /**
    * Calls {@link Agent#setDefaultGrabber(Grabber)} on registered
    * {@link #agents()}.
    */
-  void setDefaultGrabber(Grabber grabber) {
+  setDefaultGrabber(grabber) {
+    for (const agent of this._agents) {
+      agent.setDefaultGrabber(grabber);
+    }
   }
 
   /**
    * Calls {@link Agent#shiftDefaultGrabber(Grabber, Grabber)} on
    * registered {@link #agents()}.
    */
-  void shiftDefaultGrabber(Grabber g1, Grabber g2) {
+  shiftDefaultGrabber(g1, g2) {
+    for (const agent of this._agents) {
+      agent.shiftDefaultGrabber(g1, g2);
+    }
   }
 
   /**
    * Returns {@code true} if {@link Agent#isInputGrabber(Grabber)} is
    * {@code true} for at least one agent in {@link #agents()}.
    */
-  isInputGrabber(Grabber g) {
+  isInputGrabber(grabber) {
+    for (const agent of this._agents) {
+      if (agent.isInputGrabber(grabber)) return true;
+    }
+    return false;
   }
 
   /**
    * Returns {@code true} if {@link Agent#hasGrabber(Grabber)} is
    * {@code true} for at least one agent in {@link #agents()}.
    */
-  hasGrabber(Grabber g) {
+  hasGrabber(grabber) {
+    for (const agent of this._agents) {
+      if (agent.hasGrabber(grabber)) return true;
+    }
+    return false;
   }
 
   /**
    * Calls {@link Agent#resetTrackedGrabber()} on registered
    * {@link #agents()}.
    */
-  void resetTrackedGrabber() {
+  resetTrackedGrabber() {
+    for (const agent of this._agents) {
+      agent.resetTrackedGrabber(g1, g2);
+    }
   }
 
   /**
    * Returns a list of the registered agents.
    */
-  List<Agent> agents() {
+  agents() {
+    return this._agents;
   }
 
   /**
    * Registers the given agent.
    */
-  registerAgent(Agent agent) {
+  registerAgent(agent) {
+    this._agents.add(agent);
   }
 
   /**
    * Returns true if the given agent is registered.
    */
-  isAgentRegistered(Agent agent) {
+  isAgentRegistered(agent) {
+    this._agents.has(agent);
   }
 
   /**
    * Unregisters the given agent.
    */
-  unregisterAgent(Agent agent) {
+  unregisterAgent(agent) {
+    this._agents.delete(agent);
   }
 
   /**
    * Unregisters all agents from the handler.
    */
-  void unregisterAgents() {
+  unregisterAgents() {
+    this._agents.clear();
   }
 
   /**
    * Returns the event tuple queue. Rarely needed.
    */
-  LinkedList<EventGrabberTuple> eventTupleQueue() {
+  eventTupleQueue() {
+    return this._eventTupleQueue;
   }
 
   /**
@@ -161,7 +190,8 @@ class InputHandler {
    *
    * @see #handle()
    */
-  enqueueEventTuple(EventGrabberTuple eventTuple) {
+  enqueueEventTuple(eventTuple) {
+    this._eventTupleQueue.add(eventTuple);
   }
 
   /**
@@ -169,12 +199,14 @@ class InputHandler {
    *
    * @param event to be removed.
    */
-  void removeEventTuple(Event event) {
+  removeEventTuple(event) {
+    this._eventTupleQueue.delete(event);
   }
 
   /**
    * Clears the event queue. Nothing is executed.
    */
-  void removeEventTuples() {
+  removeEventTuples() {
+    this._eventTupleQueue.clear();
   }
 }
