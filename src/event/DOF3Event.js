@@ -54,7 +54,7 @@ export default class DOF3Event extends MotionEvent {
   }
 
   get() {
-    return new DOF3Event(this);
+    return new DOF3Event({ other:this });
   }
 
   flush() {
@@ -81,7 +81,6 @@ export default class DOF3Event extends MotionEvent {
       }
     }
   }
-
 
   /**
    * @return dof-1, only meaningful if the event {@link #isRelative()}
