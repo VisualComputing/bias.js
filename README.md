@@ -1,31 +1,29 @@
-BIAS
+BIAS IN JS
 ====
 
 # Introduction
 
-**BIAS**, (**B**)ogus-(**I**)nput (**A**)ction-(**S**)elector package. A [Processing](http://processing.org) package
-defining an interface between application event input data (including but not limited to hardware input) and user-defined
-actions. The idea being that various sorts of input data, mainly that gathered from an user-interaction (e.g., a mouse
-button being pressed and dragged), may be modeled and reduced into high-level events. Those "bogus" events are then taken
+**BIAS JS**, (**B**)ogus-(**I**)nput (**A**)ction-(**S**)elector package (**J**)ava-(**S**)cript. A [Processing](http://processing.org) package developed in Java Script that defines an interface between application event input data (including but not limited to hardware input) and user-defined actions. The idea being that various sorts of input data, mainly that gathered from an user-interaction (e.g., a mouse button being pressed and dragged), may be modeled and reduced into high-level events. Those "bogus" events are then taken
 as input to implement user-defined actions on application objects (e.g., push that button or select that geometry on the
 screen and move it close to me).
 
-**BIAS** has been tested under Linux, Mac OSX and Windows. No special dependencies or requirements needed, apart of course from
-[Processing >= 2.x](https://processing.org/download/).
+It is a traslation from the [Java Bias package](https://github.com/nakednous/bias) to Java Script. It follows the ECMAScript 2016 standard. 
 
-**BIAS** support is led by the active and great Processing community at its [forum](http://forum.processing.org/two/) where you can reach us.
+
+# Development features
+* Private variables starts with an underscore "_" (e.g., _variable_name).
+* Classes are defined as "export default class", wheter is an abstract or not, to export a module. It only exports single values, an ECMAScript 6 module can pick the most important exported value. 
+* 
 
 # Key features
 
-* *Tested* under Linux, Mac OSX and Windows, and properly works with the JAVA2D, P2D and P3D **Processing** renderers. No special dependencies or requirements needed (apart of course from [Processing-2.x](http://processing.org/ Processing-1.5.1)).
-* It supports all major **Processing** flavours: Desktop, Android and (soon) JS.
+* Works with the JAVA2D, P2D and P3D Processing renderers. Not tested yet.
 * API design that provides seemless integration with **Processing**, and allows extensibility of its key features.
 * Generic support to [Human Interface Devices (HIDs)](http://en.wikipedia.org/wiki/Human_interface_device), including not only the mouse and the keyboard, but advanced HID's such as a [touchscreen](http://en.wikipedia.org/wiki/Touchscreen), a [space navigator](http://en.wikipedia.org/wiki/3Dconnexion) or a [kinect](http://en.wikipedia.org/wiki/Kinect).
 * User-defined actions, including action sub-sets.
 * Comprehensive set of [bogus events](http://otrolado.info/biasApi/remixlab/bias/core/BogusEvent.html): [KeyboardEvent](http://otrolado.info/biasApi/remixlab/bias/event/KeyboardEvent.html), [ClickEvent](http://otrolado.info/biasApi/remixlab/bias/event/ClickEvent.html) and [MotionEvent](http://otrolado.info/biasApi/remixlab/bias/event/MotionEvent.html).
 * High-level [comprehensive set of agents](http://otrolado.info/biasApi/remixlab/bias/agent/package-summary.html) capable of dealing with bogus events.
 * Keyboard shortcuts and HID bindings customization.
-* Handy set of complete documented [examples](https://github.com/nakednous/bias/wiki) that illustrates the use of the package.
 * A complete [reference documentation](http://otrolado.info/biasApi/).
 * Active support and continuous discussions led by the [Processing community](http://forum.processing.org/two/).
 * Last but not least, released as free software under the terms of the [GPL-v3](http://www.gnu.org/licenses/gpl.html).
