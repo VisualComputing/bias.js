@@ -12,8 +12,10 @@ It is a traslation from the [Java Bias package](https://github.com/nakednous/bia
 
 # Development features
 * Private variables starts with an underscore "_" (e.g., _variable_name).
-* Classes are defined as "export default class", wheter is an abstract or not, to export a module. It only exports single values, an ECMAScript 6 module can pick the most important exported value. 
-* 
+* Classes are defined as "export default class", whether they are abstract or not, to export a module. It only exports single values, an ECMAScript 6 module can pick the most important exported value. 
+* For multiple constructors with different number of parameters is used...
+* For multiple constructors with the same number of parameters is used...
+* The third party events [KeyboardEvent](http://otrolado.info/biasApi/remixlab/bias/event/KeyboardEvent.html) and [ClickEvent](http://otrolado.info/biasApi/remixlab/bias/event/ClickEvent.html) are not included in p5js library as they are in processing, because...
 
 # Key features
 
