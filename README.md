@@ -1,9 +1,9 @@
-bias.js
+Bias.js
 ====
 
 # Introduction
 
-**bias.js**, (**B**)ogus-(**I**)nput (**A**)ction-(**S**)elector package (**J**)ava-(**S**)cript. A [Processing](http://processing.org) package developed in Java Script that defines an interface between application event input data (including but not limited to hardware input) and user-defined actions. The idea being that various sorts of input data, mainly that gathered from an user-interaction (e.g., a mouse button being pressed and dragged), may be modeled and reduced into high-level events. Those "bogus" events are then taken
+**BIAS.js**, (**B**)ogus-(**I**)nput (**A**)ction-(**S**)elector package (**J**)ava-(**S**)cript. A [Processing](http://processing.org) package developed in Java Script that defines an interface between application event input data (including but not limited to hardware input) and user-defined actions. The idea being that various sorts of input data, mainly that gathered from an user-interaction (e.g., a mouse button being pressed and dragged), may be modeled and reduced into high-level events. Those "bogus" events are then taken
 as input to implement user-defined actions on application objects (e.g., push that button or select that geometry on the
 screen and move it close to me).
 
@@ -11,17 +11,15 @@ It is a traslation from the [Java Bias package](https://github.com/nakednous/bia
 
 # TODO
 
-[ ] currently p5.js doesn't implement registerMethod('mouseEvent')
-
-[ ] currently p5.js doesn't implement registerMethod('keyEvent')
-
-[ ] find a way to test DOF6
+- Implement registerMethod('mouseEvent') in p5.js.
+- Implement registerMethod('keyEvent') in p5.js .
+- Find a way to test DOF6 class.
 
 
 # Code Style Guide
 
 - Private variables starts with an underscore "_" (e.g., `_variable_name`).
-- we recommend airbnb's Javascript Style [Guide](https://github.com/airbnb/javascrip)]
+- We recommend airbnb's Javascript Style [Guide](https://github.com/airbnb/javascrip)]
 
 # Hacking
 
@@ -47,7 +45,8 @@ implemented in diferent transpilers or browsers [here](https://kangax.github.io/
 
 # Acknowledgements
 
-[Jairo Suárez](https://github.com/xyos) for the js port.
+- [Jairo Suárez](https://github.com/xyos) for the js port.
+- [Alejandro Giraldo](https://github.com/lagiraldol).
 
 # Author, core developer and maintainer
 
