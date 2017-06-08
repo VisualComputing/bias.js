@@ -12,7 +12,9 @@ It is a traslation from the [Java Bias package](https://github.com/nakednous/bia
 # TODO
 
 [ ] currently p5.js doesn't implement registerMethod('mouseEvent')
+
 [ ] currently p5.js doesn't implement registerMethod('keyEvent')
+
 [ ] find a way to test DOF6
 
 
