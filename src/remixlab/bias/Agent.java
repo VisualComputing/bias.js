@@ -10,8 +10,6 @@
 
 package remixlab.bias;
 
-import remixlab.bias.event.MotionEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -237,14 +235,6 @@ public abstract class Agent {
   }
 
   /**
-   * Returns the sensitivities used in {@link #handle(Event)} to
-   * {@link remixlab.bias.event.MotionEvent#modulate(float[])}.
-   */
-  public float[] sensitivities(MotionEvent event) {
-    return new float[]{1f, 1f, 1f, 1f, 1f, 1f};
-  }
-
-  /**
    * Enqueues an EventGrabberTuple(event, inputGrabber()) on the
    * {@link InputHandler#eventTupleQueue()}, thus enabling a call on
    * the {@link #inputGrabber()}
@@ -259,12 +249,12 @@ public abstract class Agent {
   protected boolean handle(Event event) {
     if (event == null || !handler.isAgentRegistered(this) || inputHandler() == null)
       return false;
-    if (event instanceof MotionEvent)
-      if (((MotionEvent) event).isAbsolute())
+    //Just trying to get rid of the nasty MotionEvent dependency
+    //TODO: really needs testing everywhere, -jp
+    //if (event instanceof MotionEvent)
+      //if (((MotionEvent) event).isAbsolute())
         if (event.isNull() && !event.flushed())
           return false;
-    if (event instanceof MotionEvent)
-      ((MotionEvent) event).modulate(sensitivities((MotionEvent) event));
     Grabber inputGrabber = inputGrabber();
     if (inputGrabber != null)
       return inputHandler().enqueueEventTuple(new EventGrabberTuple(event, inputGrabber));

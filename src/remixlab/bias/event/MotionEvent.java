@@ -76,13 +76,6 @@ public class MotionEvent extends Event {
   }
 
   /**
-   * Modulate the event dofs according to {@code sens}. Only meaningful if the event
-   * {@link #isAbsolute()}.
-   */
-  public void modulate(float[] sens) {
-  }
-
-  /**
    * Returns the delay between two consecutive motion events. Meaningful only if the event
    * {@link #isRelative()}.
    */

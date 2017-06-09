@@ -10,13 +10,6 @@
 
 package remixlab.bias;
 
-import remixlab.bias.event.KeyEvent;
-import remixlab.bias.event.KeyShortcut;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-
 /**
  * Every {@link Event} instance has a shortcut which represents a
  * gesture-{@link #id()}. For instance, the button being dragged and the modifier key
@@ -33,8 +26,6 @@ import java.util.HashMap;
  * related to shortcuts.</li>
  * <li>{@link remixlab.bias.event.ClickEvent} / {@link remixlab.bias.event.ClickShortcut}
  * </li>
- * <li>{@link KeyEvent} /
- * {@link KeyShortcut}</li>
  * </ol>
  */
 public class Shortcut {
