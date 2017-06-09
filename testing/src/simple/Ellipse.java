@@ -8,7 +8,7 @@ import processing.core.*;
  * Created by pierre on 12/22/16.
  */
 public class Ellipse extends GrabberObject {
-  public PApplet parent;
+  PApplet parent;
   public float radiusX, radiusY;
   public PVector center;
   public int colour;
@@ -24,8 +24,7 @@ public class Ellipse extends GrabberObject {
     contourColour = parent.color(0, 0, 0);
   }
 
-  public Ellipse(PApplet p, Agent agent, PVector c, float r) {
-    parent = p;
+  public Ellipse(Agent agent, PVector c, float r) {
     agent.addGrabber(this);
     radiusX = r;
     radiusY = r;

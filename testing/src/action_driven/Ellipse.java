@@ -8,16 +8,18 @@ import processing.core.*;
  * Created by pierre on 12/22/16.
  */
 public class Ellipse extends GrabberObject {
-  public PApplet parent;
   public float radiusX, radiusY;
+  public PApplet parent;
   public PVector center;
   public int colour;
   public int contourColour;
   public int sWeight;
+  public boolean move;
 
   public Ellipse(PApplet p, InputHandler handler) {
     super(handler);
     parent = p;
+    setMouseDragBindings();
     setColor();
     setPosition();
     sWeight = 4;
@@ -27,6 +29,7 @@ public class Ellipse extends GrabberObject {
   public Ellipse(PApplet p, InputHandler handler, PVector c, float r) {
     super(handler);
     parent = p;
+    setMouseDragBindings();
     radiusX = r;
     radiusY = r;
     center = c;
@@ -44,6 +47,11 @@ public class Ellipse extends GrabberObject {
 
   public void setPosition(DOF2Event event) {
     setPositionAndRadii(new PVector(event.x(), event.y()), radiusX, radiusY);
+  }
+
+  public void setShape(DOF1Event event) {
+    radiusX += event.dx();
+    radiusY += event.dx();
   }
 
   public void setShape(DOF2Event event) {
@@ -79,6 +87,39 @@ public class Ellipse extends GrabberObject {
     parent.popStyle();
   }
 
+  public void setMouseDragBindings() {
+    move = false;
+  }
+
+  public void setMouseMoveBindings() {
+    move = true;
+  }
+
+  @Override
+  public void performInteraction(DOF2Event event) {
+    if (move) {
+      if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.NO_ID)))
+        setPosition(event);
+    } else {
+      if (event.shortcut().matches(new Shortcut(PApplet.LEFT)))
+        setPosition(event);
+    }
+    if (event.shortcut().matches(new Shortcut(PApplet.RIGHT)))
+      setShape(event);
+  }
+
+  @Override
+  public void performInteraction(DOF1Event event) {
+    if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.CTRL, processing.event.MouseEvent.WHEEL)))
+      setShape(event);
+  }
+
+  @Override
+  public void performInteraction(ClickEvent event) {
+    if (event.shortcut().matches(new ClickShortcut(PApplet.LEFT, 1)))
+      setColor();
+  }
+
   @Override
   public boolean checkIfGrabsInput(DOF2Event event) {
     return checkIfGrabsInput(event.x(), event.y());
@@ -90,6 +131,6 @@ public class Ellipse extends GrabberObject {
   }
 
   public boolean checkIfGrabsInput(float x, float y) {
-    return(PApplet.pow((x - center.x), 2)/PApplet.pow(radiusX, 2) + PApplet.pow((y - center.y), 2)/PApplet.pow(radiusY, 2) <= 1);
+    return(parent.pow((x - center.x), 2)/parent.pow(radiusX, 2) + parent.pow((y - center.y), 2)/parent.pow(radiusY, 2) <= 1);
   }
 }
