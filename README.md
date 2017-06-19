@@ -36,7 +36,7 @@ npm install --global esdoc
 there are 2 scripts available:
 
 ```sh
-npm build # compiles fpstiming in a single file availabe on /build/fpstiming/.js
+npm build # compiles bias in a single file availabe on /build/bias/.js
 npm doc # generates the documentation on /doc folder
 ```
 
