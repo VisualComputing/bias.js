@@ -23,7 +23,7 @@ public class MouseAgent extends Agent {
       currentEvent = new DOF2Event(prevEvent, e.getX(), e.getY(),
               e.getModifiers(), move ? remixlab.bias.Event.NO_ID : e.getButton());
       if (move)
-        updateTrackedGrabber(currentEvent);
+        poll(currentEvent);
       handle(press ? currentEvent.fire() : release ? currentEvent.flush() : currentEvent);
       prevEvent = currentEvent.get();
       return;

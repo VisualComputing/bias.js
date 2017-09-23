@@ -74,21 +74,21 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public boolean checkIfGrabsInput(DOF2Event event) {
-    return checkIfGrabsInput(event.x(), event.y());
+  public boolean track(DOF2Event event) {
+    return track(event.x(), event.y());
   }
 
   @Override
-  public boolean checkIfGrabsInput(ClickEvent event) {
-    return checkIfGrabsInput(event.x(), event.y());
+  public boolean track(ClickEvent event) {
+    return track(event.x(), event.y());
   }
 
-  public boolean checkIfGrabsInput(float x, float y) {
+  public boolean track(float x, float y) {
     return(parent.pow((x - center.x), 2)/parent.pow(radiusX, 2) + parent.pow((y - center.y), 2)/parent.pow(radiusY, 2) <= 1);
   }
 
   @Override
-  public void performInteraction(ClickEvent event) {
+  public void interact(ClickEvent event) {
     if ( event.id() == PApplet.LEFT )
       setColor();
     else if ( event.id() == PApplet.RIGHT ) {
@@ -99,7 +99,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void performInteraction(DOF2Event event) {
+  public void interact(DOF2Event event) {
     if ( event.id() == PApplet.LEFT )
       setPosition();
     else if ( event.id() == PApplet.RIGHT ) {

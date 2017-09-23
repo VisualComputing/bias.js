@@ -84,7 +84,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void performInteraction(DOF2Event event) { 
+  public void interact(DOF2Event event) { 
     if (move) {
       if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.NO_ID)))
         setPosition(event);
@@ -97,28 +97,28 @@ public class Ellipse extends GrabberObject {
   }
   
   @Override
-  public void performInteraction(DOF1Event event) {
+  public void interact(DOF1Event event) {
     if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.CTRL, processing.event.MouseEvent.WHEEL)))
       setShape(event);
   }
 
   @Override
-  public void performInteraction(ClickEvent event) {
+  public void interact(ClickEvent event) {
     if (event.shortcut().matches(new ClickShortcut(LEFT, 1)))
       setColor();
   }
 
   @Override
-  public boolean checkIfGrabsInput(DOF2Event event) {
-    return checkIfGrabsInput(event.x(), event.y());
+  public boolean track(DOF2Event event) {
+    return track(event.x(), event.y());
   }
 
   @Override
-  public boolean checkIfGrabsInput(ClickEvent event) {
-    return checkIfGrabsInput(event.x(), event.y());
+  public boolean track(ClickEvent event) {
+    return track(event.x(), event.y());
   }
 
-  public boolean checkIfGrabsInput(float x, float y) {
+  public boolean track(float x, float y) {
     return(pow((x - center.x), 2)/pow(radiusX, 2) + pow((y - center.y), 2)/pow(radiusY, 2) <= 1);
   }
 }
