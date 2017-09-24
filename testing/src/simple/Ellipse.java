@@ -74,12 +74,12 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public boolean track(DOF2Event event) {
+  public boolean track(Event2 event) {
     return track(event.x(), event.y());
   }
 
   @Override
-  public boolean track(ClickEvent event) {
+  public boolean track(TapEvent event) {
     return track(event.x(), event.y());
   }
 
@@ -88,7 +88,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(ClickEvent event) {
+  public void interact(TapEvent event) {
     if ( event.id() == PApplet.LEFT )
       setColor();
     else if ( event.id() == PApplet.RIGHT ) {
@@ -99,7 +99,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(DOF2Event event) {
+  public void interact(Event2 event) {
     if ( event.id() == PApplet.LEFT )
       setPosition();
     else if ( event.id() == PApplet.RIGHT ) {

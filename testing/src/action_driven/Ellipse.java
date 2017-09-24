@@ -45,16 +45,16 @@ public class Ellipse extends GrabberObject {
     setColor(parent.color(parent.random(0, 255), parent.random(0, 255), parent.random(0, 255), parent.random(100, 200)));
   }
 
-  public void setPosition(DOF2Event event) {
+  public void setPosition(Event2 event) {
     setPositionAndRadii(new PVector(event.x(), event.y()), radiusX, radiusY);
   }
 
-  public void setShape(DOF1Event event) {
+  public void setShape(Event1 event) {
     radiusX += event.dx();
     radiusY += event.dx();
   }
 
-  public void setShape(DOF2Event event) {
+  public void setShape(Event2 event) {
     radiusX += event.dx();
     radiusY += event.dy();
   }
@@ -96,7 +96,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(DOF2Event event) {
+  public void interact(Event2 event) {
     if (move) {
       if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.NO_ID)))
         setPosition(event);
@@ -109,24 +109,24 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(DOF1Event event) {
+  public void interact(Event1 event) {
     if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.CTRL, processing.event.MouseEvent.WHEEL)))
       setShape(event);
   }
 
   @Override
-  public void interact(ClickEvent event) {
-    if (event.shortcut().matches(new ClickShortcut(PApplet.LEFT, 1)))
+  public void interact(TapEvent event) {
+    if (event.shortcut().matches(new TapShortcut(PApplet.LEFT, 1)))
       setColor();
   }
 
   @Override
-  public boolean track(DOF2Event event) {
+  public boolean track(Event2 event) {
     return track(event.x(), event.y());
   }
 
   @Override
-  public boolean track(ClickEvent event) {
+  public boolean track(TapEvent event) {
     return track(event.x(), event.y());
   }
 

@@ -1,6 +1,6 @@
 public class MouseAgent extends Agent {
   public boolean click2Pick;
-  protected DOF2Event  currentEvent, prevEvent;
+  protected Event2  currentEvent, prevEvent;
   protected boolean    move, press, drag, release;
 
   public MouseAgent(InputHandler handler) {
@@ -13,7 +13,7 @@ public class MouseAgent extends Agent {
     drag = e.getAction() == processing.event.MouseEvent.DRAG;
     release = e.getAction() == processing.event.MouseEvent.RELEASE;
     if (move || press || drag || release) {
-      currentEvent = new DOF2Event(prevEvent, e.getX(), e.getY(),
+      currentEvent = new Event2(prevEvent, e.getX(), e.getY(),
           e.getModifiers(), move ? remixlab.bias.Event.NO_ID : e.getButton());
       if (move && !click2Pick)
         poll(currentEvent);
@@ -22,15 +22,15 @@ public class MouseAgent extends Agent {
       return;
     }
     if (e.getAction() == processing.event.MouseEvent.WHEEL) {
-      handle(new DOF1Event(e.getCount(), e.getModifiers(), processing.event.MouseEvent.WHEEL));
+      handle(new Event1(e.getCount(), e.getModifiers(), processing.event.MouseEvent.WHEEL));
       return;
     }
     if (e.getAction() == processing.event.MouseEvent.CLICK) {
-      ClickEvent bogusClickEvent = new ClickEvent(e.getX(), e.getY(),
+      TapEvent bogusTapEvent = new TapEvent(e.getX(), e.getY(),
           e.getModifiers(), e.getButton(), e.getCount());
       if (click2Pick)
-        poll(bogusClickEvent);
-      handle(bogusClickEvent);
+        poll(bogusTapEvent);
+      handle(bogusTapEvent);
       return;
     }
   }
