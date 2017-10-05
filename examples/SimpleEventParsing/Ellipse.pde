@@ -63,7 +63,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public boolean track(Event2 event) {
+  public boolean track(MotionEvent2 event) {
     return track(event.x(), event.y());
   }
   
@@ -88,7 +88,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(Event2 event) {
+  public void interact(MotionEvent2 event) {
     if ( event.id() == LEFT )
       setPosition();
     else if ( event.id() == RIGHT ) {
