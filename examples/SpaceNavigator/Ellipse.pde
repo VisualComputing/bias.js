@@ -92,7 +92,7 @@ public class Ellipse extends GrabberObject {
 
   @Override
   public void interact(MotionEvent6 event) {
-    if (event.shortcut().matches(new Shortcut(SN_ID)) && !event.isNull())
+    if (event.shortcut().matches(new Shortcut(SN_ID)))
       setPositionShape(event);
   }
 

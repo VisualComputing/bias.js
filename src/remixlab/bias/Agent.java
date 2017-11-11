@@ -10,8 +10,6 @@
 
 package remixlab.bias;
 
-import remixlab.bias.event.MotionEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,19 +36,19 @@ import java.util.List;
  * also {@link #defaultGrabber()}).
  */
 public abstract class Agent {
-  protected List<Grabber> grabberList;
-  protected Grabber trackedGrabber, defaultGrabber;
-  protected boolean agentTrckn;
-  protected InputHandler handler;
+  protected List<Grabber> _grabberPool;
+  protected Grabber _trackedGrabber, _defaultGrabber;
+  protected boolean _trackingEnabled;
+  protected InputHandler _handler;
 
   /**
    * Constructs an Agent and registers is at the given inputHandler.
    */
-  public Agent(InputHandler inputHandler) {
-    grabberList = new ArrayList<Grabber>();
+  public Agent(InputHandler handler) {
+    _grabberPool = new ArrayList<Grabber>();
     setTracking(true);
-    handler = inputHandler;
-    handler.registerAgent(this);
+    _handler = handler;
+    _handler.registerAgent(this);
   }
 
   // 1. Grabbers
@@ -68,7 +66,7 @@ public abstract class Agent {
       setDefaultGrabber(null);
     if (trackedGrabber() == grabber)
       resetTrackedGrabber();
-    return grabberList.remove(grabber);
+    return _grabberPool.remove(grabber);
   }
 
   /**
@@ -81,8 +79,8 @@ public abstract class Agent {
    */
   public void removeGrabbers() {
     setDefaultGrabber(null);
-    trackedGrabber = null;
-    grabberList.clear();
+    _trackedGrabber = null;
+    _grabberPool.clear();
   }
 
   /**
@@ -94,7 +92,7 @@ public abstract class Agent {
    * @see #removeGrabbers()
    */
   public List<Grabber> grabbers() {
-    return grabberList;
+    return _grabberPool;
   }
 
   /**
@@ -125,14 +123,15 @@ public abstract class Agent {
       return false;
     if (hasGrabber(grabber))
       return false;
-    return grabberList.add(grabber);
+    return _grabberPool.add(grabber);
   }
 
   /**
    * Feeds {@link #poll(Event)} and {@link #handle(Event)} with
-   * the returned event. Returns null by default. Use it in place of
-   * {@link #pollFeed()} and/or {@link #handleFeed()} which take
-   * higher-precedence.
+   * the returned event. Returns null by default,
+   * i.e., it should be implemented by your Agent derived classes.
+   * Use it in place of {@link #pollFeed()} and/or {@link #handleFeed()}
+   * which take higher-precedence.
    * <p>
    * Automatically call by the main event loop (
    * {@link InputHandler#handle()}). See ProScene's Space-Navigator
@@ -149,7 +148,8 @@ public abstract class Agent {
   }
 
   /**
-   * Feeds {@link #handle(Event)} with the returned event. Returns null by default.
+   * Feeds {@link #handle(Event)} with the returned event. Returns null by default,
+   * i.e., it should be implemented by your Agent derived classes.
    * Use it in place of {@link #feed()} which takes lower-precedence.
    * <p>
    * Automatically call by the main event loop (
@@ -168,7 +168,8 @@ public abstract class Agent {
 
   /**
    * Feeds {@link #poll(Event)} with the returned event. Returns null
-   * by default. Use it in place of {@link #feed()} which takes lower-precedence.
+   * by default,i.e., it should be implemented by your Agent derived classes.
+   * Use it in place of {@link #feed()} which takes lower-precedence.
    * <p>
    * Automatically call by the main event loop (
    * {@link InputHandler#handle()}).
@@ -187,7 +188,7 @@ public abstract class Agent {
    * Returns the {@link InputHandler} this agent is registered to.
    */
   public InputHandler inputHandler() {
-    return handler;
+    return _handler;
   }
 
   /**
@@ -217,7 +218,7 @@ public abstract class Agent {
     Grabber dG = defaultGrabber();
     if (dG != null)
       if (dG.track(event)) {
-        trackedGrabber = dG;
+        _trackedGrabber = dG;
         return trackedGrabber();
       }
     // then if trackedGrabber grabber remains the matches:
@@ -226,11 +227,11 @@ public abstract class Agent {
       if (tG.track(event))
         return trackedGrabber();
     // pick the first otherwise
-    trackedGrabber = null;
-    for (Grabber grabber : grabberList)
+    _trackedGrabber = null;
+    for (Grabber grabber : _grabberPool)
       if (grabber != dG && grabber != tG)
         if (grabber.track(event)) {
-          trackedGrabber = grabber;
+          _trackedGrabber = grabber;
           return trackedGrabber();
         }
     return trackedGrabber();
@@ -249,7 +250,9 @@ public abstract class Agent {
    * @see #poll(Event)
    */
   protected boolean handle(Event event) {
-    if (event == null || !handler.isAgentRegistered(this) || inputHandler() == null)
+    if (event == null || !_handler.isAgentRegistered(this) || inputHandler() == null)
+      return false;
+    if (event.isNull())
       return false;
     Grabber inputGrabber = inputGrabber();
     if (inputGrabber != null)
@@ -280,7 +283,7 @@ public abstract class Agent {
    * You may need to {@link #enableTracking()} first.
    */
   public boolean isTracking() {
-    return agentTrckn;
+    return _trackingEnabled;
   }
 
   /**
@@ -306,9 +309,9 @@ public abstract class Agent {
    * Sets the {@link #isTracking()} value.
    */
   public void setTracking(boolean enable) {
-    agentTrckn = enable;
+    _trackingEnabled = enable;
     if (!isTracking())
-      trackedGrabber = null;
+      _trackedGrabber = null;
   }
 
   /**
@@ -323,7 +326,7 @@ public abstract class Agent {
    * may be null.
    */
   public Grabber trackedGrabber() {
-    return trackedGrabber;
+    return _trackedGrabber;
   }
 
   /**
@@ -334,7 +337,7 @@ public abstract class Agent {
    * @see #trackedGrabber()
    */
   public Grabber defaultGrabber() {
-    return defaultGrabber;
+    return _defaultGrabber;
   }
 
   /**
@@ -355,7 +358,7 @@ public abstract class Agent {
    */
   public boolean setDefaultGrabber(Grabber grabber) {
     if (grabber == null) {
-      this.defaultGrabber = null;
+      this._defaultGrabber = null;
       return true;
     }
     if (!hasGrabber(grabber)) {
@@ -364,7 +367,7 @@ public abstract class Agent {
               + " should be added into agent first. Use one of the agent addGrabber() methods");
       return false;
     }
-    defaultGrabber = grabber;
+    _defaultGrabber = grabber;
     return true;
   }
 
@@ -372,6 +375,6 @@ public abstract class Agent {
    * Sets the {@link #trackedGrabber()} to {@code null}.
    */
   public void resetTrackedGrabber() {
-    trackedGrabber = null;
+    _trackedGrabber = null;
   }
 }
