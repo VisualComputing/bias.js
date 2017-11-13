@@ -6,7 +6,7 @@ public class Ellipse extends GrabberObject {
   public int sWeight;
 
   public Ellipse(Agent agent) {
-    agent.addGrabber(this);
+    super(agent);
     setColor();
     setPosition();
     sWeight = 4;
@@ -14,7 +14,7 @@ public class Ellipse extends GrabberObject {
   }
 
   public Ellipse(Agent agent, PVector c, float r) {
-    agent.addGrabber(this);
+    super(agent);
     radiusX = r;
     radiusY = r;
     center = c;    
