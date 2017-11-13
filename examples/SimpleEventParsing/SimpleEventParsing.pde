@@ -5,8 +5,8 @@
  * Event parsing is based on the event.id()
  */
 
-import remixlab.bias.*;
-import remixlab.bias.event.*;
+import remixlab.input.*;
+import remixlab.input.event.*;
 
 MouseAgent agent;
 InputHandler inputHandler;

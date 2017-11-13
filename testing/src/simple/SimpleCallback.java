@@ -1,8 +1,7 @@
 package simple;
 
 import processing.core.PApplet;
-import remixlab.bias.*;
-import remixlab.bias.event.*;
+import remixlab.input.*;
 
 /**
  * Created by pierre on 12/22/16.

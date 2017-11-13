@@ -1,7 +1,7 @@
 package action_driven;
 
-import remixlab.bias.*;
-import remixlab.bias.event.*;
+import remixlab.input.*;
+import remixlab.input.event.*;
 import processing.core.*;
 
 /**
@@ -98,7 +98,7 @@ public class Ellipse extends GrabberObject {
   @Override
   public void interact(Event2 event) {
     if (move) {
-      if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.NO_ID)))
+      if (event.shortcut().matches(new Shortcut(remixlab.input.Event.NO_ID)))
         setPosition(event);
     } else {
       if (event.shortcut().matches(new Shortcut(PApplet.LEFT)))
@@ -110,7 +110,7 @@ public class Ellipse extends GrabberObject {
 
   @Override
   public void interact(Event1 event) {
-    if (event.shortcut().matches(new Shortcut(remixlab.bias.Event.CTRL, processing.event.MouseEvent.WHEEL)))
+    if (event.shortcut().matches(new Shortcut(remixlab.input.Event.CTRL, processing.event.MouseEvent.WHEEL)))
       setShape(event);
   }
 

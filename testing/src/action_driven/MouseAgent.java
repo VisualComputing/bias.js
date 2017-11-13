@@ -1,7 +1,7 @@
 package action_driven;
 
-import remixlab.bias.*;
-import remixlab.bias.event.*;
+import remixlab.input.*;
+import remixlab.input.event.*;
 
 /**
  * Created by pierre on 12/22/16.
@@ -22,7 +22,7 @@ public class MouseAgent extends Agent {
     release = e.getAction() == processing.event.MouseEvent.RELEASE;
     if (move || press || drag || release) {
       currentEvent = new Event2(prevEvent, e.getX(), e.getY(),
-              e.getModifiers(), move ? remixlab.bias.Event.NO_ID : e.getButton());
+              e.getModifiers(), move ? remixlab.input.Event.NO_ID : e.getButton());
       if (move && !click2Pick)
         poll(currentEvent);
       handle(press ? currentEvent.fire() : release ? currentEvent.flush() : currentEvent);

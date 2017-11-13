@@ -1,7 +1,6 @@
 package action_driven;
 
-import remixlab.bias.*;
-import remixlab.bias.event.*;
+import remixlab.input.*;
 import processing.core.*;
 
 /**

@@ -14,7 +14,7 @@ public class MouseAgent extends Agent {
     release = e.getAction() == processing.event.MouseEvent.RELEASE;
     if (move || press || drag || release) {
       currentEvent = new MotionEvent2(prevEvent, e.getX(), e.getY(),
-          e.getModifiers(), move ? remixlab.bias.Event.NO_ID : e.getButton());
+          e.getModifiers(), move ? remixlab.input.Event.NO_ID : e.getButton());
       if (move && !click2Pick)
         poll(currentEvent);
       handle(press ? currentEvent.fire() : release ? currentEvent.flush() : currentEvent);

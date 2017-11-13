@@ -10,6 +10,6 @@ public class HIDAgent extends Agent {
     return new MotionEvent6(10*sliderXpos.getValue(), 10*sliderYpos.getValue(),
                             10*sliderZpos.getValue(), 10*sliderXrot.getValue(),
                             10*sliderYrot.getValue(), 10*sliderZrot.getValue(),
-                            remixlab.bias.Event.NO_MODIFIER_MASK, SN_ID);
+                            remixlab.input.Event.NO_MODIFIER_MASK, SN_ID);
   }
 }

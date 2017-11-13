@@ -1,7 +1,7 @@
 package simple;
 
-import remixlab.bias.*;
-import remixlab.bias.event.*;
+import remixlab.input.*;
+import remixlab.input.event.*;
 import processing.core.*;
 
 /**
