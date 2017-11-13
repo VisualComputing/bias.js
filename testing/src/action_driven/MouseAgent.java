@@ -8,7 +8,7 @@ import remixlab.input.event.*;
  */
 public class MouseAgent extends Agent {
   public boolean click2Pick;
-  protected Event2  currentEvent, prevEvent;
+  protected MotionEvent2  currentEvent, prevEvent;
   protected boolean    move, press, drag, release;
 
   public MouseAgent(InputHandler handler) {
@@ -21,7 +21,7 @@ public class MouseAgent extends Agent {
     drag = e.getAction() == processing.event.MouseEvent.DRAG;
     release = e.getAction() == processing.event.MouseEvent.RELEASE;
     if (move || press || drag || release) {
-      currentEvent = new Event2(prevEvent, e.getX(), e.getY(),
+      currentEvent = new MotionEvent2(prevEvent, e.getX(), e.getY(),
               e.getModifiers(), move ? remixlab.input.Event.NO_ID : e.getButton());
       if (move && !click2Pick)
         poll(currentEvent);
@@ -30,7 +30,7 @@ public class MouseAgent extends Agent {
       return;
     }
     if (e.getAction() == processing.event.MouseEvent.WHEEL) {
-      handle(new Event1(e.getCount(), e.getModifiers(), processing.event.MouseEvent.WHEEL));
+      handle(new MotionEvent1(e.getCount(), e.getModifiers(), processing.event.MouseEvent.WHEEL));
       return;
     }
     if (e.getAction() == processing.event.MouseEvent.CLICK) {

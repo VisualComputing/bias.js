@@ -45,16 +45,16 @@ public class Ellipse extends GrabberObject {
     setColor(parent.color(parent.random(0, 255), parent.random(0, 255), parent.random(0, 255), parent.random(100, 200)));
   }
 
-  public void setPosition(Event2 event) {
+  public void setPosition(MotionEvent2 event) {
     setPositionAndRadii(new PVector(event.x(), event.y()), radiusX, radiusY);
   }
 
-  public void setShape(Event1 event) {
+  public void setShape(MotionEvent1 event) {
     radiusX += event.dx();
     radiusY += event.dx();
   }
 
-  public void setShape(Event2 event) {
+  public void setShape(MotionEvent2 event) {
     radiusX += event.dx();
     radiusY += event.dy();
   }
@@ -96,7 +96,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(Event2 event) {
+  public void interact(MotionEvent2 event) {
     if (move) {
       if (event.shortcut().matches(new Shortcut(remixlab.input.Event.NO_ID)))
         setPosition(event);
@@ -109,7 +109,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(Event1 event) {
+  public void interact(MotionEvent1 event) {
     if (event.shortcut().matches(new Shortcut(remixlab.input.Event.CTRL, processing.event.MouseEvent.WHEEL)))
       setShape(event);
   }
@@ -121,7 +121,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public boolean track(Event2 event) {
+  public boolean track(MotionEvent2 event) {
     return track(event.x(), event.y());
   }
 

@@ -16,6 +16,7 @@ public class Ellipse extends GrabberObject {
   public int sWeight;
 
   public Ellipse(PApplet p, Agent agent) {
+    super(agent);
     parent = p;
     agent.addGrabber(this);
     setColor();
@@ -25,7 +26,7 @@ public class Ellipse extends GrabberObject {
   }
 
   public Ellipse(Agent agent, PVector c, float r) {
-    agent.addGrabber(this);
+    super(agent);
     radiusX = r;
     radiusY = r;
     center = c;
@@ -74,7 +75,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public boolean track(Event2 event) {
+  public boolean track(MotionEvent2 event) {
     return track(event.x(), event.y());
   }
 
@@ -99,7 +100,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void interact(Event2 event) {
+  public void interact(MotionEvent2 event) {
     if ( event.id() == PApplet.LEFT )
       setPosition();
     else if ( event.id() == PApplet.RIGHT ) {
