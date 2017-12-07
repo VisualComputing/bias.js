@@ -5,8 +5,8 @@
  * objects, are reported by {@link #fired()} and {@link #flushed()}, respectively.
  * <p>
  * The following are the main class specializations:
- * {@link remixlab.bias.event.MotionEvent}, {@link remixlab.bias.event.ClickEvent}, and
- * {@link KeyEvent}. Please refer to their documentation for
+ * {@link remixlab.input.event.MotionEvent}, {@link TapEvent}, and
+ * {@link remixlab.input.event.KeyEvent}. Please refer to their documentation for
  * details.
  * <p>
  * If you ever need to define you're own event type, derive from this class; and, optional,
@@ -20,7 +20,7 @@
  * the PApplet the so called mouseEvent and KeyEvent methods. Moreover, the
  * {@link Agent#handleFeed()} provides a callback alternative when none
  * of these mechanisms are available (as it often happens when dealing with specialized,
- * non-default input hardware).
+ * non-default inputGrabber hardware).
  */
 import Shortcut from './Shortcut';
 
@@ -146,7 +146,7 @@ export default class Event {
   }
 
   /**
-   * Only {@link remixlab.bias.event.MotionEvent}s may be null.
+   * Only {@link remixlab.input.event.MotionEvent}s may be null.
    */
   isNull() {
     return false;
