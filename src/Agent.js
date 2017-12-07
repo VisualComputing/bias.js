@@ -1,12 +1,11 @@
-import MotionEvent from './event/MotionEvent';
-import EventGrabberTuple from './EventGrabberTuple';
+import Tuple from './Tuple';
 /**
  * Agents gather data from different sources --mostly from input devices such touch
  * surfaces or simple mice-- and reduce them into a rather simple but quite 'useful' set
  * of interface events ({@link Event} ) for third party objects (
  * {@link Grabber} objects) to consume them (
  * {@link #handle(Event)}). Agents thus effectively open up a channel between all
- * kinds of input data sources and user-space objects. To add/remove a grabber to/from the
+ * kinds of input data sources and user-space objects. To add/removeGrabbers a grabber to/from the
  * {@link #grabbers()} collection issue {@link #addGrabber(Grabber)} /
  * {@link #removeGrabber(Grabber)} calls. Derive from this agent and either call
  * {@link #handle(Event)} or override {@link #handleFeed()} .
@@ -14,8 +13,8 @@ import EventGrabberTuple from './EventGrabberTuple';
  * The agent may send events to its {@link #inputGrabber()} which may be regarded as
  * the agent's grabber target. The {@link #inputGrabber()} may be set by querying each
  * grabber object in {@link #grabbers()} to check if its
- * {@link Grabber#checkIfGrabsInput(Event)}) condition is met (see
- * {@link #updateTrackedGrabber(Event)}, {@link #updateTrackedGrabberFeed()}). The
+ * {@link Grabber#track(Event)}) condition is met (see
+ * {@link #poll(Event)}, {@link #pollFeed()}). The
  * first grabber meeting the condition, namely the {@link #trackedGrabber()}), will then
  * be set as the {@link #inputGrabber()}. When no grabber meets the condition, the
  * {@link #trackedGrabber()} is then set to null. In this case, a non-null
@@ -26,12 +25,13 @@ export default class Agent {
   /**
    * Constructs an Agent and registers is at the given inputHandler.
    */
-  constructor(inputHandler) {
-    this._grabberList = new Set();
+  constructor(handler) {
+    this._grabberPool = new Set();
     this._trackedGrabber = null;
     this._defaultGrabber = null;
-    this._agentTrckn = true;
-    this._handler = inputHandler;
+    this._trackingEnabled = false;
+    this._handler = handler;
+    this.setTracking(true);
     this._handler.registerAgent(this);
   }
   // 1. Grabbers
@@ -47,8 +47,7 @@ export default class Agent {
   removeGrabber(grabber) {
     if (this.defaultGrabber() === grabber) this.setDefaultGrabber(null);
     if (this.trackedGrabber() === grabber) this.resetTrackedGrabber();
-    this._grabberList.delete(grabber);
-    return this._grabberList;
+    return this._grabberPool.delete(grabber);
   }
 
   /**
@@ -61,8 +60,8 @@ export default class Agent {
    */
   removeGrabbers() {
     this.setDefaultGrabber(null);
-    this.resetTrackedGrabber();
-    this._grabberList.clear();
+    this._trackedGrabber = null;
+    this._grabberPool.clear();
   }
 
   /**
@@ -74,7 +73,7 @@ export default class Agent {
    * @see #removeGrabbers()
    */
   grabbers() {
-    return this._grabberList;
+    return this._grabberPool;
   }
 
   /**
@@ -86,7 +85,7 @@ export default class Agent {
    * @see #removeGrabbers()
    */
   hasGrabber(grabber) {
-    return this._grabberList.has(grabber);
+    return this._grabberPool.has(grabber);
   }
 
   /**
@@ -98,16 +97,17 @@ export default class Agent {
    * @see #removeGrabbers()
    */
   addGrabber(grabber) {
-    if (grabber !== null || this._grabberList.has(grabber)) return false;
-    this._grabberList.add(grabber);
+    if (grabber == null || this._grabberPool.has(grabber)) return false;
+    this._grabberPool.add(grabber);
     return true;
   }
 
   /**
-   * Feeds {@link #updateTrackedGrabber(Event)} and {@link #handle(Event)} with
-   * the returned event. Returns null by default. Use it in place of
-   * {@link #updateTrackedGrabberFeed()} and/or {@link #handleFeed()} which take
-   * higher-precedence.
+   * Feeds {@link #poll(Event)} and {@link #handle(Event)} with
+   * the returned event. Returns null by default,
+   * i.e., it should be implemented by your Agent derived classes.
+   * Use it in place of {@link #pollFeed()} and/or {@link #handleFeed()}
+   * which take higher-precedence.
    * <p>
    * Automatically call by the main event loop (
    * {@link InputHandler#handle()}). See ProScene's Space-Navigator
@@ -115,16 +115,17 @@ export default class Agent {
    *
    * @see InputHandler#handle()
    * @see #handleFeed()
-   * @see #updateTrackedGrabberFeed()
+   * @see #pollFeed()
    * @see #handle(Event)
-   * @see #updateTrackedGrabber(Event)
+   * @see #poll(Event)
    */
   feed() {
     return null;
   }
 
   /**
-   * Feeds {@link #handle(Event)} with the returned event. Returns null by default.
+   * Feeds {@link #handle(Event)} with the returned event. Returns null by default,
+   * i.e., it should be implemented by your Agent derived classes.
    * Use it in place of {@link #feed()} which takes lower-precedence.
    * <p>
    * Automatically call by the main event loop (
@@ -133,17 +134,18 @@ export default class Agent {
    *
    * @see InputHandler#handle()
    * @see #feed()
-   * @see #updateTrackedGrabberFeed()
+   * @see #pollFeed()
    * @see #handle(Event)
-   * @see #updateTrackedGrabber(Event)
+   * @see #poll(Event)
    */
   handleFeed() {
     return null;
   }
 
   /**
-   * Feeds {@link #updateTrackedGrabber(Event)} with the returned event. Returns null
-   * by default. Use it in place of {@link #feed()} which takes lower-precedence.
+   * Feeds {@link #poll(Event)} with the returned event. Returns null
+   * by default,i.e., it should be implemented by your Agent derived classes.
+   * Use it in place of {@link #feed()} which takes lower-precedence.
    * <p>
    * Automatically call by the main event loop (
    * {@link InputHandler#handle()}).
@@ -152,9 +154,9 @@ export default class Agent {
    * @see #feed()
    * @see #handleFeed()
    * @see #handle(Event)
-   * @see #updateTrackedGrabber(Event)
+   * @see #poll(Event)
    */
-  updateTrackedGrabberFeed() {
+  pollFeed() {
     return null;
   }
 
@@ -168,7 +170,7 @@ export default class Agent {
   /**
    * If {@link #isTracking()} and the agent is registered at the {@link #inputHandler()}
    * then queries each object in the {@link #grabbers()} to check if the
-   * {@link Grabber#checkIfGrabsInput(Event)}) condition is met.
+   * {@link Grabber#track(Event)}) condition is met.
    * The first object meeting the condition will be set as the {@link #inputGrabber()} and
    * returned. Note that a null grabber means that no object in the {@link #grabbers()}
    * met the condition. A {@link #inputGrabber()} may also be enforced simply with
@@ -183,7 +185,7 @@ export default class Agent {
    * @see #defaultGrabber()
    * @see #inputGrabber()
    */
-  updateTrackedGrabber(event) {
+  poll(event) {
     if (
       event == null ||
       !this.inputHandler().isAgentRegistered(this) ||
@@ -196,7 +198,7 @@ export default class Agent {
     // keyboards and doesn't hurt motion grabbers:
     const dG = this.defaultGrabber();
     if (dG != null) {
-      if (dG.checkIfGrabsInput(event)) {
+      if (dG.track(event)) {
         this._trackedGrabber = dG;
         return this.trackedGrabber();
       }
@@ -204,13 +206,13 @@ export default class Agent {
     // then if tracked grabber remains the matches:
     const tG = this.trackedGrabber();
     if (tG != null) {
-      if (tG.checkIfGrabsInput(event)) return this.trackedGrabber();
+      if (tG.track(event)) return this.trackedGrabber();
     }
     // pick the first otherwise
     this._trackedGrabber = null;
-    for (const grabber of this._grabberList) {
+    for (const grabber of this._grabberPool) {
       if (grabber !== dG && grabber !== tG) {
-        if (grabber.checkIfGrabsInput(event)) {
+        if (grabber.track(event)) {
           this._trackedGrabber = grabber;
           break;
         }
@@ -220,48 +222,32 @@ export default class Agent {
   }
 
   /**
-   * Returns the sensitivities used in {@link #handle(Event)} to
-   * {@link remixlab.bias.event.MotionEvent#modulate(float[])}.
-   */
-  sensitivities(event) {
-    return [1, 1, 1, 1, 1, 1];
-  }
-
-  /**
-   * Enqueues an EventGrabberTuple(event, inputGrabber()) on the
-   * {@link InputHandler#eventTupleQueue()}, thus enabling a call on
+   * Enqueues an Tuple(event, input()) on the
+   * {@link InputHandler#tupleQueue()}, thus enabling a call on
    * the {@link #inputGrabber()}
-   * {@link Grabber#performInteraction(Event)} method (which is
+   * {@link Grabber#interact(Event)} method (which is
    * scheduled for execution till the end of this main event loop iteration, see
-   * {@link InputHandler#enqueueEventTuple(EventGrabberTuple)} for
+   * {@link InputHandler#enqueueTuple(Tuple)} for
    * details).
    *
    * @see #inputGrabber()
-   * @see #updateTrackedGrabber(Event)
+   * @see #poll(Event)
    */
   handle(event) {
     if (
       event === null ||
-      this._inputHandler() === null ||
+      this.inputHandler() === null ||
       !this._handler.isAgentRegistered(this)
     ) {
       return false;
     }
-    if (
-      event instanceof MotionEvent &&
-      event.isAbsolute() &&
-      event.isNull() &&
-      !event.flushed()
-    ) {
+    if (!event.isNull()) {
       return false;
-    }
-    if (event instanceof MotionEvent) {
-      event.modulate(this.sensitivities(event));
     }
     const inputGrabber = this.inputGrabber();
     if (inputGrabber != null) {
       return this.inputHandler().enqueueEventTuple(
-        new EventGrabberTuple(event, inputGrabber)
+        new Tuple(event, inputGrabber)
       );
     }
     return false;
@@ -274,11 +260,11 @@ export default class Agent {
    * @see #trackedGrabber()
    */
   inputGrabber() {
-    return this.trackedGrabber() || this.defaultGrabber();
+    return this.trackedGrabber() != null ? this.trackedGrabber() : this.defaultGrabber();
   }
 
   /**
-   * Returns true if {@code g} is the agent's {@link #inputGrabber()} and false otherwise.
+   * Returns true if {@code grabber} is the agent's {@link #inputGrabber()} and false otherwise.
    */
   isInputGrabber(grabber) {
     return this.inputGrabber() === grabber;
@@ -290,12 +276,12 @@ export default class Agent {
    * You may need to {@link #enableTracking()} first.
    */
   isTracking() {
-    return this._agentTrckn;
+    return this._trackingEnabled;
   }
 
   /**
    * Enables tracking so that the {@link #inputGrabber()} may be updated when calling
-   * {@link #updateTrackedGrabber(Event)}.
+   * {@link #poll(Event)}.
    *
    * @see #disableTracking()
    */
@@ -316,21 +302,15 @@ export default class Agent {
    * Sets the {@link #isTracking()} value.
    */
   setTracking(enable) {
-    this._agentTrckn = enable;
+    this._trackingEnabled = enable;
     if (!this.isTracking()) {
       this._trackedGrabber = null;
     }
   }
 
-  /**
-   * Calls {@link #setTracking(boolean)} to toggle the {@link #isTracking()} value.
-   */
-  toggleTracking() {
-    this.setTracking(!this.isTracking());
-  }
 
   /**
-   * Returns the grabber set after {@link #updateTrackedGrabber(Event)} is called. It
+   * Returns the grabber set after {@link #poll(Event)} is called. It
    * may be null.
    */
   trackedGrabber() {
@@ -354,7 +334,7 @@ export default class Agent {
    * which is ubiquitous among the examples.
    */
   shiftDefaultGrabber(g1, g2) {
-    return this.defaultGrabber() != g1
+    return this.defaultGrabber() !== g1
       ? this.setDefaultGrabber(g1) ? true : this.setDefaultGrabber(g2)
       : this.setDefaultGrabber(g2);
   }
@@ -371,8 +351,8 @@ export default class Agent {
     }
     if (!this.hasGrabber(grabber)) {
       console.warn(
-        "To set an Agent default grabber the Grabber should be added into agent first."
-      );
+        "To set an Agent default grabber the Grabber should be added into agent first. " +
+        "Use one of the agent addGrabber() methods");
       return false;
     }
     this._defaultGrabber = grabber;
