@@ -1,62 +1,66 @@
+/**************************************************************************************
+ * bias_tree
+ * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
+ * @author Jean Pierre Charalambos, http://otrolado.info/
+ *
+ * All rights reserved. Library that eases the creation of interactive
+ * scenes, released under the terms of the GNU Public License v3.0
+ * which is available at http://www.gnu.org/licenses/gpl.html
+ **************************************************************************************/
+
 /**
  * The InputHandler object is the high level package handler which holds a collection of
  * {@link #agents()}, and an event dispatcher queue of
- * {@link EventGrabberTuple}s ({@link #eventTupleQueue()}). Such tuple
+ * {@link Tuple}s ({@link #tupleQueue()}). Such tuple
  * represents a message passing to application objects, allowing an object to be
- * instructed to perform a particular user-defined action from a given
+ * instructed to interact a particular user-defined action from a given
  * {@link Event}. For an introduction to BIAS please refer to
  * <a href="http://nakednous.github.io/projects/bias">this</a>.
  * <p>
- * At runtime, the input handler should continuously run the two loops defined in
+ * At runtime, the inputGrabber handler should continuously run the two loops defined in
  * {@link #handle()}. Therefore, simply attach a call to {@link #handle()} at the end of
- * your main event (drawing) loop for that to take effect (like it's done in
- * <b>dandelion</b> by the <b>AbstractScene.postDraw()</b> method).
+ * your main event (drawing) loop for that to take effect.
  */
 export default class InputHandler {
   constructor() {
     // D E V I C E S & E V E N T S
+    // Agents
     this._agents = new Set();
-    this._eventTupleQueue = new Set();
+    // Events
+    this._tupleQueue = new Array();
   }
 
   /**
-   * Main handler method. Call it at the end of your main event (drawing) loop (like it's
-   * done in <b>dandelion</b> by the <b>AbstractScene.postDraw()</b> method)
+   * Main handler method. Call it at the end of your main event (drawing) loop.
    * <p>
    * The handle comprises the following two loops:
    * <p>
-   * 1. {@link EventGrabberTuple} producer loop which for each
+   * 1. {@link Tuple} producer loop which for each
    * registered agent calls: a.
-   * {@link Agent#updateTrackedGrabber(Event)}; and, b.
+   * {@link Agent#poll(Event)}; and, b.
    * {@link Agent#handle(Event)}. Note that the event are
    * obtained from the agents callback
-   * {@link Agent#updateTrackedGrabberFeed()} and
+   * {@link Agent#pollFeed()} and
    * {@link Agent#handleFeed()} methods, respectively. The event
    * may also be obtained from {@link Agent#handleFeed()} which may
    * replace both of the previous feeds when they are null.<br>
    * 2. User-defined action consumer loop: which for each
-   * {@link EventGrabberTuple} calls
-   * {@link EventGrabberTuple#perform()}.<br>
+   * {@link Tuple} calls
+   * {@link Tuple#interact()}.<br>
    *
    * @see Agent#feed()
-   * @see Agent#updateTrackedGrabberFeed()
+   * @see Agent#pollFeed()
    * @see Agent#handleFeed()
    */
   handle() {
     // 1. Agents
     for (const agent of this._agents) {
-      agent.updateTrackedGrabber(
-        agent.updateTrackedGrabberFeed() != null
-          ? agent.updateTrackedGrabberFeed()
-          : agent.feed());
-      agent.handle(
-        agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
+      agent.poll(agent.pollFeed() != null ? agent.pollFeed() : agent.feed());
+      agent.handle(agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
     }
-    while (!this._eventTupleQueue.length > 0) {
-      const eventTupleArray = Array.from(this._eventTupleQueue);
-      const eventTuple = eventTupleQueue.shift();
-      eventTuple.perform();
-      this._eventTupleQueue = Set(eventTupleArray);
+    // 2. Low level events
+    while (this._tupleQueue > 0) {
+      this._tupleQueue.shift().interact();
     }
   }
 
@@ -178,10 +182,10 @@ export default class InputHandler {
   }
 
   /**
-   * Returns the event tuple queue. Rarely needed.
+   * Returns the tuple queue. Rarely needed.
    */
-  eventTupleQueue() {
-    return this._eventTupleQueue;
+  tupleQueue() {
+    return this._tupleQueue;
   }
 
   /**
@@ -190,8 +194,11 @@ export default class InputHandler {
    *
    * @see #handle()
    */
-  enqueueEventTuple(eventTuple) {
-    this._eventTupleQueue.add(eventTuple);
+  enqueueEventTuple(tuple) {
+    if (!this._tupleQueue.contains(tuple)) {
+      return this._tupleQueue.add(tuple);
+    }
+    return false;
   }
 
   /**
@@ -199,14 +206,14 @@ export default class InputHandler {
    *
    * @param event to be removed.
    */
-  removeEventTuple(event) {
-    this._eventTupleQueue.delete(event);
+  removeTuple(event) {
+    this._tupleQueue.delete(event);
   }
 
   /**
    * Clears the event queue. Nothing is executed.
    */
-  removeEventTuples() {
-    this._eventTupleQueue.clear();
+  removeTuples() {
+    this._tupleQueue.clear();
   }
 }
