@@ -1,4 +1,6 @@
 import Tuple from './Tuple';
+import Interface from './Interface';
+
 /**
  * Agents gather data from different sources --mostly from input devices such touch
  * surfaces or simple mice-- and reduce them into a rather simple but quite 'useful' set
@@ -98,6 +100,8 @@ export default class Agent {
    */
   addGrabber(grabber) {
     if (grabber == null || this._grabberPool.has(grabber)) return false;
+    // Check if grabber implements Grabber methods
+    Interface.Grabber.ensureImplements(grabber);
     this._grabberPool.add(grabber);
     return true;
   }
