@@ -1,3 +1,13 @@
+/**************************************************************************************
+ * bias_tree
+ * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
+ * @author Jean Pierre Charalambos, http://otrolado.info/
+ *
+ * All rights reserved. Library that eases the creation of interactive
+ * scenes, released under the terms of the GNU Public License v3.0
+ * which is available at http://www.gnu.org/licenses/gpl.html
+ **************************************************************************************/
+
 import Event from '../Event';
 import KeyShortcut from './KeyShortcut';
 
@@ -21,10 +31,10 @@ export default class KeyEvent extends Event {
    * Constructs a keyevent with <b>c</b> defining its
    * {@link KeyShortcut}.
    */
-  constructor({ char = null, modifiers = null, vk = null, other = null }) {
-    if (char !== null) {
+  constructor({ key = null, modifiers = null, vk = null, other = null }) {
+    if (key !== null) {
       super();
-      this._key = char;
+      this._key = key;
     } else if (modifiers !== null && vk !== null) {
       super({ modifiers, id: vk });
       this._key = '\0';

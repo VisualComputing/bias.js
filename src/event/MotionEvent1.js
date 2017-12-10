@@ -1,58 +1,65 @@
+/**************************************************************************************
+ * bias_tree
+ * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
+ * @author Jean Pierre Charalambos, http://otrolado.info/
+ *
+ * All rights reserved. Library that eases the creation of interactive
+ * scenes, released under the terms of the GNU Public License v3.0
+ * which is available at http://www.gnu.org/licenses/gpl.html
+ **************************************************************************************/
+
+import { NO_ID } from '../Event';
 import MotionEvent from './MotionEvent';
 
 /**
  * A {@link remixlab.bias.event.MotionEvent} with one degree of freedom ( {@link #x()}).
  */
-export default class DOF1Event extends MotionEvent {
+export default class MotionEvent1 extends MotionEvent {
   /**
-   * Construct an absolute DOF1 event.
+   * Construct an absolute DOF1 motion event.
    *
    * @param dx        1-dof
    * @param x         1-dof
-   * @param prevEvent
+   * @param previous
    * @param modifiers MotionShortcut modifiers
    * @param id        MotionShortcut gesture-id
    */
-  constructor({ x = 0, dx = 0, modifiers = null, id = null, prevEvent = null, other = null }) {
-    if (other) {
+  constructor({ x = 0, dx = 0, modifiers = null, id = NO_ID, previous, other = null } = {}) {
+    if (other !== null) {
       super({ other });
-      this._x = other.x;
-      this._dx = other.dx;
-    } else if (prevEvent !== null) {
+      this._x = other._x;
+      this._dx = other._dx;
+    } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(prevEvent);
+      this._setPrevious(previous);
       this._x = x;
-      this._dx = x;
-    } else if (dx !== null && modifiers !== null && id !== null) {
+    } else if (dx !== null) {
       super({ modifiers, id });
-      this._x = x;
-      this.dx = dx;
+      this._dx = dx;
     } else {
-      super();
-      this._x = x;
-      this.dx = dx;
+      throw Error("Invalid number of parameters in MotionEvent1 instantiation");
     }
   }
 
   get() {
-    return new DOF1Event(this);
+    return new MotionEvent1(this);
   }
 
   flush() {
-    super.flush();
+    return super.flush();
   }
 
   fire() {
-    super.fire();
+    return super.fire();
   }
 
-  setPreviousEvent(prevEvent) {
-    this._rel = true;
-    if (prevEvent != null) {
-      if (prevEvent instanceof DOF1Event && prevEvent.id() === this.id()) {
-        this._dx = this.x() - prevEvent.x();
-        this._distance = this.x() - prevEvent.x();
-        this._delay = this.timestamp() - prevEvent.timestamp();
+  _setPrevious(previous) {
+    this._relative = true;
+    if (previous != null) {
+      if (previous instanceof MotionEvent1 && previous.id() === this.id()) {
+        this._dx = this.x() - previous.x();
+        this._distance = this.x() - previous.x();
+        this._delay = this.timestamp() - previous.timestamp();
         if (this._delay === 0) this._speed = this._distance;
         else this._speed = this._distance / this._delay;
       }
@@ -76,20 +83,12 @@ export default class DOF1Event extends MotionEvent {
   /**
    * @return previous dof-1, only meaningful if the event {@link #isRelative()}
    */
-  prevX() {
+  previousX() {
     return this._x() - this._dx();
   }
 
-  modulate(sens = null) {
-    if (sens != null) {
-      if (sens.length >= 1 && this.isAbsolute()) {
-        this._dx *= sens[0];
-      }
-    }
-  }
-
   isNull() {
-    if (this.dx() === 0) return true;
+    if (this.dx() === 0 && !this.fired() && !this.flushed()) return true;
     return false;
   }
 }

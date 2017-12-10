@@ -1,13 +1,22 @@
+/**************************************************************************************
+ * bias_tree
+ * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
+ * @author Jean Pierre Charalambos, http://otrolado.info/
+ *
+ * All rights reserved. Library that eases the creation of interactive
+ * scenes, released under the terms of the GNU Public License v3.0
+ * which is available at http://www.gnu.org/licenses/gpl.html
+ **************************************************************************************/
+
 import Event, { NO_ID } from '../Event';
 
-import DOF1Event from './DOF1Event';
-import DOF2Event from './DOF2Event';
-import DOF3Event from './DOF3Event';
-import DOF6Event from './DOF6Event';
+import MotionEvent1 from './event/MotionEvent1';
+import MotionEvent2 from './event/MotionEvent2';
+import MotionEvent3 from './event/MotionEvent3';
+import MotionEvent6 from './event/MotionEvent6';
 
 /**
- * Base class of all DOF_n_Events: {@link Event}s defined from
- * DOFs (degrees-of-freedom).
+ * Base class of all motion events defined from DOFs (degrees-of-freedom).
  * <p>
  * MotionEvents may be relative or absolute (see {@link #isRelative()}, {@link #isAbsolute()})
  * depending whether or not they're constructed from a previous MotionEvent. While
@@ -15,45 +24,37 @@ import DOF6Event from './DOF6Event';
  * {@link #delay()}, absolute motion events don't.
  */
 export default class MotionEvent extends Event {
-  constructor({ modifiers = null, id = NO_ID, other = null }) {
+  constructor({ modifiers = null, id = NO_ID, other = null } = {}) {
     if ((modifiers === null, id === null, other === null)) {
       super();
     } else if (other !== null) {
-      super(other);
-    } else if (id === null) {
-      super(modifiers, NO_ID);
+      super({ other });
     } else {
-      super(modifiers, id);
+      super({ modifiers, id });
     }
     this._delay = 0;
     this._distance = 0;
     this._speed = 0;
-    this._rel = false;
+    this._relative = false;
     if (other !== null) {
       this._delay = other._delay;
       this._distance = other._distance;
       this._speed = other._speed;
-      this._rel = other._rel;
+      this._relative = other._relative;
     }
   }
 
   get() {
-    return new MotionEvent(this);
+    return new MotionEvent({ other: this });
   }
 
   flush() {
-    super.flush();
+    return super.flush();
   }
 
   fire() {
-    super.fire();
+    return super.fire();
   }
-
-  /**
-   * Modulate the event dofs according to {@code sens}. Only meaningful if the event
-   * {@link #isAbsolute()}.
-   */
-  modulate(sens) {}
 
   /**
    * Returns the delay between two consecutive motion events. Meaningful only if the event
@@ -85,7 +86,7 @@ export default class MotionEvent extends Event {
    */
   isRelative() {
     // return distance() != 0;
-    return this._rel;
+    return this._relative;
   }
 
   /**
@@ -93,18 +94,18 @@ export default class MotionEvent extends Event {
    * previous motion event.
    */
   isAbsolute() {
-    return !this._isRelative();
+    return !this.isRelative();
   }
 
   /**
    * Sets the event's previous event to build a relative event.
    */
-  setPreviousEvent(prevEvent) {
-    this._rel = true;
+  _setPrevious(previous) {
+    this._relative = true;
     // makes sense only if derived classes call it
-    if (prevEvent != null) {
-      if (prevEvent.id() === this.id()) {
-        this._delay = this.timestamp() - prevEvent.timestamp();
+    if (previous != null) {
+      if (previous.id() === this.id()) {
+        this._delay = this.timestamp() - previous.timestamp();
         if (this._delay === 0) this._speed = this._distance;
         else this._speed = this._distance / this._delay;
       }
@@ -112,51 +113,51 @@ export default class MotionEvent extends Event {
   }
 
   /**
-   * Returns a {@link remixlab.bias.event.DOF1Event} from the MotionEvent x-coordinate if
+   * Returns a {@link MotionEvent1} from the MotionEvent x-coordinate if
    * {@code fromX} is {@code true} and from the y-coordinate otherwise.
    */
-  static dof1Event(event, fromX = true) {
-    if (event instanceof DOF1Event) return event;
-    if (event instanceof DOF2Event) return event.dof1Event(fromX);
-    if (event instanceof DOF3Event) return event.dof2Event().dof1Event(fromX);
-    if (event instanceof DOF6Event) {
-      return event.dof3Event(fromX).dof2Event().dof1Event(fromX);
+  static event1(event, fromX = true) {
+    if (event instanceof MotionEvent1) return event;
+    if (event instanceof MotionEvent2) return event.event1(fromX);
+    if (event instanceof MotionEvent3) return event.event2().event1(fromX);
+    if (event instanceof MotionEvent6) {
+      return event.event3(fromX).event2().event1(fromX);
     }
     return null;
   }
 
 
   /**
-   * Returns a {@link remixlab.bias.event.DOF2Event} from the MotionEvent x-coordinate if
+   * Returns a {@link MotionEvent2} from the MotionEvent x-coordinate if
    * {@code fromX} is {@code true} and from the y-coordinate otherwise.
    */
-  static dof2Event(event, fromX = true) {
-    if (event instanceof DOF1Event) return null;
-    if (event instanceof DOF2Event) return event;
-    if (event instanceof DOF3Event) return event.dof2Event();
-    if (event instanceof DOF6Event) return event.dof3Event(fromX).dof2Event();
+  static event2(event, fromX = true) {
+    if (event instanceof MotionEvent1) return null;
+    if (event instanceof MotionEvent2) return event;
+    if (event instanceof MotionEvent3) return event.event2();
+    if (event instanceof MotionEvent6) return event.event3(fromX).event2();
     return null;
   }
 
   /**
-   * Returns a {@link remixlab.bias.event.DOF3Event} from the MotionEvent
+   * Returns a {@link MotionEvent3} from the MotionEvent
    * translation-coordinates if {@code fromTranslation} is {@code true} and from the
    * rotation-coordinate otherwise.
    */
-  static dof3Event(event, fromTranslation = true) {
-    if (event instanceof DOF1Event) return null;
-    if (event instanceof DOF2Event) return null;
-    if (event instanceof DOF3Event) return event;
-    if (event instanceof DOF6Event) return event.dof3Event(fromTranslation);
+  static event3(event, fromTranslation = true) {
+    if (event instanceof MotionEvent1) return null;
+    if (event instanceof MotionEvent2) return null;
+    if (event instanceof MotionEvent3) return event;
+    if (event instanceof MotionEvent6) return event.event3(fromTranslation);
     return null;
   }
 
   /**
-   * Returns a {@link remixlab.bias.event.DOF6Event} if the MotionEvent {@code instanceof}
-   * {@link remixlab.bias.event.DOF6Event} and null otherwise..
+   * Returns a {@link MotionEvent6} if the MotionEvent {@code instanceof}
+   * {@link MotionEvent6} and null otherwise..
    */
-  static dof6Event(event) {
-    if (event instanceof DOF6Event) return event;
+  static MotionEvent6(event) {
+    if (event instanceof MotionEvent6) return event;
     return null;
   }
 

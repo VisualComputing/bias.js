@@ -1,13 +1,24 @@
+/**************************************************************************************
+ * bias_tree
+ * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
+ * @author Jean Pierre Charalambos, http://otrolado.info/
+ *
+ * All rights reserved. Library that eases the creation of interactive
+ * scenes, released under the terms of the GNU Public License v3.0
+ * which is available at http://www.gnu.org/licenses/gpl.html
+ **************************************************************************************/
+
+import { NO_ID } from '../Event';
 import MotionEvent from './MotionEvent';
-import DOF1Event from './DOF1Event';
+import MotionEvent1 from './MotionEvent1';
 
 /**
- * A {@link remixlab.bias.event.MotionEvent} with two degrees-of-freedom ( {@link #x()}
+ * A {@link remixlab.input.event.MotionEvent} with two degrees-of-freedom ({@link #x()}
  * and {@link #y()}).
  */
-export default class DOF2Event extends MotionEvent {
+export default class MotionEvent2 extends MotionEvent {
   /**
-   * Construct an absolute event from the given dof's and modifiers.
+   * Construct from the given dof's and modifiers.
    *
    * @param x
    * @param y
@@ -15,64 +26,48 @@ export default class DOF2Event extends MotionEvent {
    * @param dy
    * @param modifiers
    * @param id
+   * @param previous
+   * @param other
    */
   constructor({
-    x = 0,
-    y = 0,
-    dx = 0,
-    dy = 0,
-    modifiers = null,
-    id = null,
-    prevEvent = null,
-    other = null }) {
+    x = 0, y = 0, dx = 0, dy = 0, modifiers = null,
+    id = NO_ID, previous, other = null } = {}) {
     if (other) {
       super({ other });
-      this._x = other.x;
-      this._dx = other.dx;
-      this._y = other.y;
-      this._dy = other.dy;
-    } else if (prevEvent !== null) {
+      this._x = other._x; this._dx = other._dx;
+      this._y = other._y; this._dy = other._dy;
+    } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(prevEvent);
-      this._x = x;
-      this._y = y;
-      this._dx = dx;
-      this._dy = dy;
-    } else if (dx !== null && dy !== null && modifiers !== null && id !== null) {
+      this._setPrevious(previous);
+      this._x = x; this._y = y;
+    } else if (dx !== null && dy !== null) {
       super({ modifiers, id });
-      this._x = x;
-      this._y = y;
-      this._dx = dx;
-      this._dy = dy;
+      this._dx = dx; this._dy = dy;
     } else {
-      super();
-      this._x = x;
-      this._y = y;
-      this._dx = dx;
-      this._dy = dy;
+      throw Error("Invalid number of parameters in MotionEvent2 instantiation");
     }
   }
 
   get() {
-    return new DOF2Event(this);
+    return new MotionEvent2(this);
   }
 
   flush() {
-    super.flush();
+    return super.flush();
   }
 
   fire() {
-    super.fire();
+    return super.fire();
   }
 
-  setPreviousEvent(prevEvent) {
-    this._rel = true;
-    if (prevEvent != null) {
-      if (prevEvent instanceof DOF2Event && prevEvent.id() === this.id()) {
-        this._dx = this.x() - prevEvent.x();
-        this._dy = this.y() - prevEvent.y();
-        this._distance = MotionEvent.distance(this._x, this._y, prevEvent.x(), prevEvent.y());
-        this._delay = this.timestamp() - prevEvent.timestamp();
+  _setPrevious(previous) {
+    this._relative = true;
+    if (previous !== null) {
+      if (previous instanceof MotionEvent2 && previous.id() === this.id()) {
+        this._dx = this.x() - previous.x();
+        this._dy = this.y() - previous.y();
+        this._distance = MotionEvent.distance(this._x, this._y, previous.x(), previous.y());
+        this._delay = this.timestamp() - previous.timestamp();
         if (this._delay === 0) this._speed = this._distance;
         else this._speed = this._distance / this._delay;
       }
@@ -96,7 +91,7 @@ export default class DOF2Event extends MotionEvent {
   /**
    * @return previous dof-1, only meaningful if the event {@link #isRelative()}
    */
-  prevX() {
+  previousX() {
     return this.x() - this.dx();
   }
 
@@ -117,44 +112,43 @@ export default class DOF2Event extends MotionEvent {
   /**
    * @return previous dof-2, only meaningful if the event {@link #isRelative()}
    */
-  prevY() {
+  previousY() {
     return this.y() - this.dy();
   }
 
-  modulate(sens) {
-    if (sens !== null) {
-      if (sens.length >= 2 && this.isAbsolute()) {
-        this._dx = this._dx * sens[0];
-        this._dy = this._dy * sens[1];
-      }
-    }
-  }
-
   isNull() {
-    if (this.dx() === 0 && this.dy() === 0) return true;
+    if (this.dx() === 0 && this.dy() === 0 && !this.fired() && !this.flushed()) return true;
     return false;
   }
 
   /**
-   * Reduces the event to a {@link remixlab.bias.event.DOF1Event} (lossy reduction).
+   * Reduces the event to a {@link remixlab.bias.event.MotionEvent1} (lossy reduction).
    *
    * @param fromX if true keeps dof-1, else keeps dof-2
    */
-  dof1Event(fromX = true) {
+  MotionEvent1(fromX = true) {
     let pe1;
     let e1;
     if (fromX) {
       if (this.isRelative()) {
-        pe1 = new DOF1Event(null, this.prevX(), this.modifiers(), this.id());
-        e1 = new DOF1Event(pe1, this.x(), this.modifiers(), this.id());
+        pe1 = new MotionEvent1({
+          previous: null, x: this.previousX(), modifiers: this.modifiers(), id: this.id(),
+        });
+        e1 = new MotionEvent1({
+          previous: pe1, x: this.x(), modifiers: this.modifiers(), id: this.id(),
+        });
       } else {
-        e1 = new DOF1Event(this.dx(), this.modifiers(), this.id());
+        e1 = new MotionEvent1({ dx: this.dx(), modifiers: this.modifiers(), id: this.id() });
       }
     } else if (this.isRelative()) {
-      pe1 = new DOF1Event(null, this.prevY(), this.modifiers(), this.id());
-      e1 = new DOF1Event(pe1, this.y(), this.modifiers(), this.id());
+      pe1 = new MotionEvent1({
+        previous: null, x: this.previousY(), modifiers: this.modifiers(), id: this.id(),
+      });
+      e1 = new MotionEvent1({
+        previous: pe1, x: this.y(), modifiers: this.modifiers(), id: this.id(),
+      });
     } else {
-      e1 = new DOF1Event(this.dy(), this.modifiers(), this.id());
+      e1 = new MotionEvent1({ dx: this.dy(), modifiers: this.modifiers(), id: this.id() });
     }
     e1._delay = this.delay();
     e1._speed = this.speed();

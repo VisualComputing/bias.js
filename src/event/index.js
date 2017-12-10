@@ -3,10 +3,10 @@ import KeyShortcut from './KeyShortcut';
 import ClickEvent from './ClickEvent';
 import ClickShortcut from './ClickShortcut';
 import MotionEvent from './MotionEvent';
-import DOF1Event from './DOF1Event';
-import DOF2Event from './DOF2Event';
-import DOF3Event from './DOF3Event';
-import DOF6Event from './DOF6Event';
+import DOF1Event from './MotionEvent1';
+import DOF2Event from './MotionEvent2';
+import DOF3Event from './MotionEvent3';
+import DOF6Event from './MotionEvent6';
 
 const event = {
   ClickEvent,
