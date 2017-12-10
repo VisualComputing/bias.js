@@ -8,6 +8,7 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
+import { NO_ID, NO_MODIFIER_MASK } from '../Event';
 import Shortcut from '../Shortcut';
 
 /**
@@ -25,17 +26,9 @@ export default class KeyShortcut extends Shortcut {
    * @param mmodifiers  the mask
    * @param virtualKey the virtual key that defines the key shortcut.
    */
-  constructor({ key = null, modifiers = null, virtualKey = null }) {
-    if (key !== null) {
-      super();
-      this._key = key;
-    } else if (modifiers !== null) {
-      super({ modifiers, virtualKey });
-      this._key = '\0';
-    } else {
-      super({ virtualKey });
-      this._key = '\0';
-    }
+  constructor({ key = '\0', modifiers = NO_MODIFIER_MASK, virtualKey = NO_ID } = {}) {
+    super({ modifiers, id: virtualKey });
+    this._key = key;
   }
   /**
    * Returns the key-shortcut key.

@@ -8,7 +8,7 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-import { NO_ID } from '../Event';
+import { NO_ID, NO_MODIFIER_MASK } from '../Event';
 import MotionEvent from './MotionEvent';
 import MotionEvent1 from './MotionEvent1';
 
@@ -30,7 +30,7 @@ export default class MotionEvent2 extends MotionEvent {
    * @param other
    */
   constructor({
-    x = 0, y = 0, dx = 0, dy = 0, modifiers = null,
+    x = 0, y = 0, dx = 0, dy = 0, modifiers = NO_MODIFIER_MASK,
     id = NO_ID, previous, other = null } = {}) {
     if (other) {
       super({ other });

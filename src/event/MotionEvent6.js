@@ -1,4 +1,4 @@
-import { NO_ID } from '../Event';
+import { NO_ID, NO_MODIFIER_MASK } from '../Event';
 import MotionEvent from './MotionEvent';
 import MotionEvent3 from './MotionEvent3';
 
@@ -10,7 +10,7 @@ export default class MotionEvent6 extends MotionEvent {
   constructor({
     x = 0, y = 0, z = 0, dx = 0, dy = 0, dz = 0,
     rx = 0, ry = 0, rz = 0, drx = 0, dry = 0, drz = 0,
-    modifiers = null, id = NO_ID, previous, other = null
+    modifiers = NO_MODIFIER_MASK, id = NO_ID, previous, other = null
   } = {}) {
     if (other) {
       super({ other });

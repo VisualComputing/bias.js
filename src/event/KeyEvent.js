@@ -8,7 +8,7 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-import Event from '../Event';
+import Event, { NO_ID, NO_MODIFIER_MASK } from '../Event';
 import KeyShortcut from './KeyShortcut';
 
 /**
@@ -31,19 +31,13 @@ export default class KeyEvent extends Event {
    * Constructs a keyevent with <b>c</b> defining its
    * {@link KeyShortcut}.
    */
-  constructor({ key = null, modifiers = null, vk = null, other = null }) {
-    if (key !== null) {
-      super();
-      this._key = key;
-    } else if (modifiers !== null && vk !== null) {
-      super({ modifiers, id: vk });
-      this._key = '\0';
-    } else if (vk !== null && modifiers === null) {
-      super({ id: vk });
-      this._key = '\0';
-    } else {
+  constructor({ key = '\0', modifiers = NO_MODIFIER_MASK, virtualKey = NO_ID, other = null } = {}) {
+    if ( other !== null ){
       super({ other });
-      this._key = other.key();
+      this._key = other._key;
+    } else {
+      super({ modifiers, id: virtualKey });
+      this._key = key;
     }
   }
 
@@ -61,8 +55,10 @@ export default class KeyEvent extends Event {
   }
 
   shortcut() {
-    if (this._key === '\0') return new KeyShortcut({ modifiers: this.modifiers(), id: this.id() });
-    return new KeyShortcut({ key: this.key() });
+    if (this._key === '\0') {
+      return new KeyShortcut({ modifiers: this.modifiers(), id: this.id() });
+    }
+    return new KeyShortcut({key: this.key()});
   }
 
   key() {

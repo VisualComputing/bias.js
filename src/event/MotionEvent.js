@@ -8,12 +8,11 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-import Event, { NO_ID } from '../Event';
-
-import MotionEvent1 from './event/MotionEvent1';
-import MotionEvent2 from './event/MotionEvent2';
-import MotionEvent3 from './event/MotionEvent3';
-import MotionEvent6 from './event/MotionEvent6';
+import Event, { NO_ID, NO_MODIFIER_MASK } from '../Event';
+import MotionEvent1 from '../event/MotionEvent1';
+import MotionEvent2 from '../event/MotionEvent2';
+import MotionEvent3 from '../event/MotionEvent3';
+import MotionEvent6 from '../event/MotionEvent6';
 
 /**
  * Base class of all motion events defined from DOFs (degrees-of-freedom).
@@ -24,23 +23,19 @@ import MotionEvent6 from './event/MotionEvent6';
  * {@link #delay()}, absolute motion events don't.
  */
 export default class MotionEvent extends Event {
-  constructor({ modifiers = null, id = NO_ID, other = null } = {}) {
-    if ((modifiers === null, id === null, other === null)) {
-      super();
-    } else if (other !== null) {
-      super({ other });
-    } else {
-      super({ modifiers, id });
-    }
-    this._delay = 0;
-    this._distance = 0;
-    this._speed = 0;
-    this._relative = false;
+  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID, other = null } = {}) {
     if (other !== null) {
+      super({ other });
       this._delay = other._delay;
       this._distance = other._distance;
       this._speed = other._speed;
       this._relative = other._relative;
+    } else {
+      super({ modifiers, id });
+      this._delay = 0;
+      this._distance = 0;
+      this._speed = 0;
+      this._relative = false;
     }
   }
 

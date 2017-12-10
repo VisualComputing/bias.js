@@ -33,30 +33,19 @@ export const ALT              = 0b1000;
 export const ALT_GRAPH        = 0b10000;
 
 export default class Event {
-  constructor({ modifiers = null, id = null, other = null }) {
-    this._fire = false;
-    this._flush = false;
-    /**
-     * Constructs an event with an "empty" {@link Shortcut}.
-     */
-    this._modifiers = NO_MODIFIER_MASK;
-    this._id = NO_ID;
-    this._timestamp = window.performance.now();
-
-    /**
-     * Constructs an event taking the given {@code modifiers} as a
-     * {@link Shortcut}.
-     */
-    if (modifiers !== null && id !== null) {
-      this._modifiers = modifiers;
-      this._id = id;
-      this._timestamp = window.performance.now();
-    } else if (other !== null) {
+  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID, other = null } = {}) {
+    if (other !== null) {
       this._modifiers = other._modifiers;
       this._id = other._id;
       this._timestamp = window.performance.now();
       this._fire = other._fire;
       this._flush = other._flush;
+    } else {
+      this._fire = false;
+      this._flush = false;
+      this._modifiers = modifiers;
+      this._id = id;
+      this._timestamp = window.performance.now();
     }
   }
 

@@ -8,7 +8,7 @@
  * which is available at http://www.gnu.org/licenses/gpl.html
  **************************************************************************************/
 
-import { NO_ID } from '../Event';
+import { NO_ID, NO_MODIFIER_MASK } from '../Event';
 import MotionEvent from './MotionEvent';
 
 /**
@@ -24,7 +24,7 @@ export default class MotionEvent1 extends MotionEvent {
    * @param modifiers MotionShortcut modifiers
    * @param id        MotionShortcut gesture-id
    */
-  constructor({ x = 0, dx = 0, modifiers = null, id = NO_ID, previous, other = null } = {}) {
+  constructor({ x = 0, dx = 0, modifiers = NO_MODIFIER_MASK, id = NO_ID, previous, other = null } = {}) {
     if (other !== null) {
       super({ other });
       this._x = other._x;
