@@ -59,9 +59,9 @@ export default class GrabberObject {
   }
 
   interact(event) {
-    if (event instanceof KeyEvent) this.performInteractionKey(event);
-    if (event instanceof TapEvent) this.performInteractionTap(event);
-    if (event instanceof MotionEvent) this.performInteractionMotion(event);
+    if (event instanceof KeyEvent) this.keyInteraction(event);
+    if (event instanceof TapEvent) this.tapInteraction(event);
+    if (event instanceof MotionEvent) this.motionInteraction(event);
   }
 
   /**
@@ -72,75 +72,75 @@ export default class GrabberObject {
    * Override this method when you want the object to interact an interaction from a
    * {@link remixlab.input.event.MotionEvent}.
    */
-  performInteractionMotion(event) {
-    if (event instanceof MotionEvent1) this.performInteractionMotion1(event);
-    if (event instanceof MotionEvent2) this.performInteractionMotion2(event);
-    if (event instanceof MotionEvent3) this.performInteractionMotion3(event);
-    if (event instanceof MotionEvent6) this.performInteractionMotion6(event);
+  motionInteraction(event) {
+    if (event instanceof MotionEvent1) this.motion1Interaction(event);
+    if (event instanceof MotionEvent2) this.motion2Interaction(event);
+    if (event instanceof MotionEvent3) this.motion3Interaction(event);
+    if (event instanceof MotionEvent6) this.motion6Interaction(event);
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link KeyEvent}.
    */
-  performInteractionKey(event) {
+  keyInteraction(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link TapEvent}.
    */
-  performInteractionTap(event) {
+  tapInteraction(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link MotionEvent1}.
    */
-  performInteractionMotion1(event) {
+  motion1Interaction(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link MotionEvent2}.
    */
-  performInteractionMotion2(event) {
+  motion2Interaction(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link MotionEvent3}.
    */
-  performInteractionMotion3(event) {
+  motion3Interaction(event) {
   }
 
   /**
    * Override this method when you want the object to perform an interaction from a
    * {@link MotionEvent6}.
    */
-  performInteractionMotion6(event) {
+  motion6Interaction(event) {
   }
 
   track(event) {
-    if (event instanceof KeyEvent) return this.trackKey(event);
-    if (event instanceof TapEvent) return this.trackTap(event);
-    if (event instanceof MotionEvent) return this.trackMotion(event);
+    if (event instanceof KeyEvent) return this.keyTracking(event);
+    if (event instanceof TapEvent) return this.tapTracking(event);
+    if (event instanceof MotionEvent) return this.motionTracking(event);
     return false;
   }
 
   /**
-   * Calls trackMotion() on the proper motion event:
+   * Calls motionTracking() on the proper motion event:
    * {@link MotionEvent1}, {@link MotionEvent2},
    * {@link MotionEvent3} or {@link MotionEvent6}.
    * <p>
    * Override this method when you want the object to be picked from a
    * {@link KeyEvent}.
    */
-  trackMotion(event) {
-    if (event instanceof MotionEvent1) return this.trackMotion1(event);
-    if (event instanceof MotionEvent2) return this.trackMotion2(event);
-    if (event instanceof MotionEvent3) return this.trackMotion3(event);
-    if (event instanceof MotionEvent6) return this.trackMotion6(event);
+  motionTracking(event) {
+    if (event instanceof MotionEvent1) return this.motion1Tracking(event);
+    if (event instanceof MotionEvent2) return this.motion2Tracking(event);
+    if (event instanceof MotionEvent3) return this.motion3Tracking(event);
+    if (event instanceof MotionEvent6) return this.motion6Tracking(event);
     return false;
   }
 
@@ -148,7 +148,7 @@ export default class GrabberObject {
    * Override this method when you want the object to be picked from a
    * {@link KeyEvent}.
    */
-  trackKey(event) {
+  keyTracking(event) {
     return false;
   }
 
@@ -156,7 +156,7 @@ export default class GrabberObject {
    * Override this method when you want the object to be picked from a
    * {@link TapEvent}.
    */
-  trackTap(event) {
+  tapTracking(event) {
     return false;
   }
 
@@ -164,7 +164,7 @@ export default class GrabberObject {
    * Override this method when you want the object to be picked from a
    * {@link MotionEvent1}.
    */
-  trackMotion1(event) {
+  motion1Tracking(event) {
     return false;
   }
 
@@ -172,7 +172,7 @@ export default class GrabberObject {
    * Override this method when you want the object to be picked from a
    * {@link MotionEvent2}.
    */
-  trackMotion2(event) {
+  motion2Tracking(event) {
     return false;
   }
 
@@ -180,7 +180,7 @@ export default class GrabberObject {
    * Override this method when you want the object to be picked from a
    * {@link MotionEvent3}.
    */
-  trackMotion3(event) {
+  motion3Tracking(event) {
     return false;
   }
 
@@ -188,7 +188,7 @@ export default class GrabberObject {
    * Override this method when you want the object to be picked from a
    * {@link MotionEvent6}.
    */
-  trackMotion6(event) {
+  motion6Tracking(event) {
     return false;
   }
 }
