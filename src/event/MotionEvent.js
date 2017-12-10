@@ -9,10 +9,10 @@
  **************************************************************************************/
 
 import Event, { NO_ID, NO_MODIFIER_MASK } from '../Event';
-import MotionEvent1 from '../event/MotionEvent1';
-import MotionEvent2 from '../event/MotionEvent2';
-import MotionEvent3 from '../event/MotionEvent3';
-import MotionEvent6 from '../event/MotionEvent6';
+import MotionEvent1 from './MotionEvent1';
+import MotionEvent2 from './MotionEvent2';
+import MotionEvent3 from './MotionEvent3';
+import MotionEvent6 from './MotionEvent6';
 
 /**
  * Base class of all motion events defined from DOFs (degrees-of-freedom).
