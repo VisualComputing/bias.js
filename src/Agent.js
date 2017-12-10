@@ -245,14 +245,13 @@ export default class Agent {
     ) {
       return false;
     }
-    if (!event.isNull()) {
+    if (event.isNull()) {
       return false;
     }
     const inputGrabber = this.inputGrabber();
     if (inputGrabber != null) {
       return this.inputHandler().enqueueEventTuple(
-        new Tuple(event, inputGrabber)
-      );
+        new Tuple(event, inputGrabber));
     }
     return false;
   }
