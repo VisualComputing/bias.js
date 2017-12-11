@@ -151,7 +151,7 @@ export default class MotionEvent extends Event {
    * Returns a {@link MotionEvent6} if the MotionEvent {@code instanceof}
    * {@link MotionEvent6} and null otherwise..
    */
-  static MotionEvent6(event) {
+  static event6(event) {
     if (event instanceof MotionEvent6) return event;
     return null;
   }
