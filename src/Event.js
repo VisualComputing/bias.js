@@ -110,7 +110,7 @@ export default class Event {
    * @see Shortcut
    */
   shortcut() {
-    return new Shortcut({ mask: this.modifiers(), id: this.id() });
+    return new Shortcut(this.id(), this.modifiers());
   }
 
   /**
