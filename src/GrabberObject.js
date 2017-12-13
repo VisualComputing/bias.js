@@ -46,7 +46,7 @@ export default class GrabberObject {
    * Check if this object is the {@link Agent#inputGrabber()} either from an agent or
    * from any agent registered at the given input handler.
    */
-  static grabsInput(agentOrInputHandler) {
+  grabsInput(agentOrInputHandler) {
     if (agentOrInputHandler instanceof Agent) {
       return agentOrInputHandler.inputGrabber() === this;
     }
