@@ -164,7 +164,7 @@ export default class InputHandler {
    * Returns true if the given agent is registered.
    */
   isAgentRegistered(agent) {
-    this._agents.has(agent);
+    return this._agents.has(agent);
   }
 
   /**
@@ -195,8 +195,8 @@ export default class InputHandler {
    * @see #handle()
    */
   enqueueEventTuple(tuple) {
-    if (!this._tupleQueue.contains(tuple)) {
-      return this._tupleQueue.add(tuple);
+    if (!this._tupleQueue.includes(tuple)) {
+      return this._tupleQueue.push(tuple);
     }
     return false;
   }
