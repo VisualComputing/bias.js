@@ -1,3 +1,5 @@
+import {NO_ID, NO_MODIFIER_MASK} from "../src/Event";
+
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -308,7 +310,9 @@ class Agent {
     // then if tracked grabber remains the matches:
     const tG = this.trackedGrabber();
     if (tG != null) {
-      if (tG.track(event)) return this.trackedGrabber();
+      if (tG.track(event)){
+        return this.trackedGrabber();
+      }
     }
     // pick the first otherwise
     this._trackedGrabber = null;
@@ -504,7 +508,7 @@ class Shortcut {
    * @param mask modifier mask defining the shortcut
    * @param id gesture ig
    */
-  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID } = {}) {
+  constructor(id = NO_ID, modifiers = NO_MODIFIER_MASK) {
     this._modifiers = modifiers;
     this._id = id;
   }
@@ -1901,7 +1905,7 @@ class InputHandler {
       agent.handle(agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
     }
     // 2. Low level events
-    while (this._tupleQueue > 0) {
+    while (this._tupleQueue.length > 0) {
       this._tupleQueue.shift().interact();
     }
   }
@@ -2006,7 +2010,7 @@ class InputHandler {
    * Returns true if the given agent is registered.
    */
   isAgentRegistered(agent) {
-    this._agents.has(agent);
+    return this._agents.has(agent);
   }
 
   /**
@@ -2037,8 +2041,8 @@ class InputHandler {
    * @see #handle()
    */
   enqueueEventTuple(tuple) {
-    if (!this._tupleQueue.contains(tuple)) {
-      return this._tupleQueue.add(tuple);
+    if (!this._tupleQueue.includes(tuple)) {
+      return this._tupleQueue.push(tuple);
     }
     return false;
   }
@@ -2111,6 +2115,8 @@ class GrabberObject {
   }
 
   interact(event) {
+    console.log("interaction");
+    console.log(event);
     if (event instanceof KeyEvent) this.keyInteraction(event);
     if (event instanceof TapEvent) this.tapInteraction(event);
     if (event instanceof MotionEvent) this.motionInteraction(event);
@@ -2125,6 +2131,8 @@ class GrabberObject {
    * {@link remixlab.input.event.MotionEvent}.
    */
   motionInteraction(event) {
+    console.log("interaction");
+    console.log(event);
     if (event instanceof MotionEvent1) this.motion1Interaction(event);
     if (event instanceof MotionEvent2) this.motion2Interaction(event);
     if (event instanceof MotionEvent3) this.motion3Interaction(event);
