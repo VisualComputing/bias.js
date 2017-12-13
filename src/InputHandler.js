@@ -59,7 +59,7 @@ export default class InputHandler {
       agent.handle(agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
     }
     // 2. Low level events
-    while (this._tupleQueue > 0) {
+    while (this._tupleQueue.length > 0) {
       this._tupleQueue.shift().interact();
     }
   }
