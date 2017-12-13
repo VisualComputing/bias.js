@@ -28,9 +28,12 @@ function setup() {
   canvas.mouseReleased( function(event){
     agent.mouseEvent(event);
   });
-  for (let i = 0; i < 50; i++) {
+  canvas.mouseWheel( function(event){
+    agent.mouseEvent(event);
+  });
+
+  for (let i = 0; i < 1; i++) {
     const check = inputHandler instanceof bias.InputHandler;
-    console.log("check :" + check);
     ellipses.push(new Ellipse(inputHandler));
   }
 }

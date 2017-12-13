@@ -30,33 +30,41 @@ class Ellipse extends bias.GrabberObject {
     if(event === null){
       const maxRadius = 50;
       const low = maxRadius;
-      const highX = 800 - maxRadius;
-      const highY = 800 - maxRadius;
+      const highX = width - maxRadius;
+      const highY = height - maxRadius;
       const r = random(20, maxRadius);
       this.setPositionAndRadii(new p5.Vector(random(low, highX), random(low, highY)), r, r);
     }else {
-      this.setPositionAndRadii(new p5.Vector(event.x(), event.y()), radiusX, radiusY);
+      this.setPositionAndRadii(new p5.Vector(event.x(), event.y()), this.radiusX, this.radiusY);
     }
   }
 
   setShape(event) {
-    if ( event instanceof MotionEvent1 ) {
+    console.log(event);
+    if ( event instanceof bias.event.MotionEvent1 ) {
       this.radiusX += event.dx();
       this.radiusY += event.dx();
-    } else if ( event instanceof MotionEvent2 ) {
+    } else if ( event instanceof bias.event.MotionEvent2 ) {
       this.radiusX += event.dx();
       this.radiusY += event.dy();
     }
   }
 
   setPositionAndRadii(p, rx, ry) {
+    console.log("center position : " + p);
+    console.log("center : " + this.center);
+    console.log("rx : " + rx);
+    console.log("ry : " + ry);
+    console.log("radx : " + this.radiusX);
+    console.log("rady : " + this.radiusY);
     this.center = p;
-    this.radiusX = rx;
-    this.radiusY = ry;
+    this.radiusX = floor(rx);
+    this.radiusY = floor(ry);
   }
 
 
   draw(c = this.colour) {
+    console.log("center : " + this.center + " radx : " + this.radiusX + " rady : " + this.radiusY);
     push();
     stroke(this.contourColour);
     strokeWeight(this.sWeight);
@@ -74,36 +82,43 @@ class Ellipse extends bias.GrabberObject {
   }
 
   motion2Interaction(event) {
+    console.log("motion 2d");
+    console.log(event);
+    console.log("mouseX" + mouseX);
+    console.log("mouseY" + mouseY);
     if (this.move) {
       if (event.shortcut().matches(new bias.Shortcut(bias.Event.NO_ID)))
         this.setPosition(event);
     } else {
-      if (event.shortcut().matches(new bias.Shortcut(LEFT)))
+      if (event.shortcut().matches(new bias.Shortcut(1)))
         this.setPosition(event);
     }
-    if (event.shortcut().matches(new bias.Shortcut(RIGHT)))
-      this.setShape(event);
+    if (event.shortcut().matches(new bias.Shortcut(2))) {
+      //this.setShape(event);
+    }
   }
 
   motion1Interaction(event) {
-    if (event.shortcut().matches(new bias.Shortcut(bias.Event.CTRL, CENTER)))
+    if (event.shortcut().matches(new bias.Shortcut(10, 0))) {
+      console.log("ENTRA");
       this.setShape(event);
+    }
   }
 
   tapInteraction(event) {
-    if (event.shortcut().matches(new TapShortcut(LEFT, 1)))
+    if (event.shortcut().matches(new TapShortcut(1, 1)))
       this.setColor();
   }
 
   motion2Tracking(event) {
-    return this.track(event.x(), event.y());
+    return this.checkTrack(event.x(), event.y());
   }
 
   tapTracking(event) {
-    return this.track(event.x(), event.y());
+    return this.checkTrack(event.x(), event.y());
   }
 
-  track(x, y) {
+  checkTrack(x, y) {
     return (pow((x - this.center.x), 2)/pow(this.radiusX, 2) + pow((y - this.center.y), 2)/pow(this.radiusY, 2) <= 1);
   }
 }

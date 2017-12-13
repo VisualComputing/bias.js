@@ -31,15 +31,16 @@ class MouseAgent extends bias.Agent {
         modifiers,
         id: this.move ? bias.NO_ID : e.buttons,
       });
-      if (this.move && !this.click2Pick)
+      if (this.move && !this.click2Pick) {
         this.poll(this.currentEvent);
+      }
       this.handle(this.press ? this.currentEvent.fire() : this.release ? this.currentEvent.flush() : this.currentEvent);
       this.prevEvent = this.currentEvent.get();
       return;
     }
     if (e.type === "wheel") {
       const delta = e.wheelDelta !== 0 ? e.wheelDelta > 0 ? 1 : -1 : 0;
-      this.handle(new bias.event.MotionEvent1({ dx: delta, modifiers, id: 3 }));
+      this.handle(new bias.event.MotionEvent1({ dx: delta, modifiers, id: 10 }));
       return;
     }
     if (e.type == "click") {
@@ -47,7 +48,7 @@ class MouseAgent extends bias.Agent {
         x: e.clientX,
         y: e.clientY,
         modifiers,
-        id: 1,
+        id: 11,
         count: e.detail,
       });
       if (this.click2Pick)
