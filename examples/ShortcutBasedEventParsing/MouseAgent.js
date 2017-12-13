@@ -1,4 +1,4 @@
-class MouseAgent extends Agent {
+class MouseAgent extends bias.Agent {
   constructor(handler) {
     super(handler);
     this.click2Pick = false;
@@ -24,12 +24,12 @@ class MouseAgent extends Agent {
     const modifiers = SHIFT + CTRL + META + ALT;
 
     if (this.move || this.press || this.drag || this.release) {
-      this.currentEvent = new MotionEvent2({
+      this.currentEvent = new bias.event.MotionEvent2({
         previous: this.prevEvent,
         x: e.clientX,
         y: e.clientY,
         modifiers,
-        id: this.move ? NO_ID : e.buttons,
+        id: this.move ? bias.NO_ID : e.buttons,
       });
       if (this.move && !this.click2Pick)
         this.poll(this.currentEvent);
@@ -39,11 +39,11 @@ class MouseAgent extends Agent {
     }
     if (e.type === "wheel") {
       const delta = e.wheelDelta !== 0 ? e.wheelDelta > 0 ? 1 : -1 : 0;
-      this.handle(new MotionEvent1({ dx: delta, modifiers, id: 3 }));
+      this.handle(new bias.event.MotionEvent1({ dx: delta, modifiers, id: 3 }));
       return;
     }
     if (e.type == "click") {
-      const bogusTapEvent = new TapEvent({
+      const bogusTapEvent = new bias.event.TapEvent({
         x: e.clientX,
         y: e.clientY,
         modifiers,

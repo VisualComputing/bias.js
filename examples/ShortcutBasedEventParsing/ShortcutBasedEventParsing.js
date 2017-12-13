@@ -11,8 +11,8 @@ let ellipses = [];
 let canvas;
 
 function setup() {
-  canvas = createCanvas(800, 800);
-  inputHandler = new InputHandler();
+  canvas = createCanvas(640, 360);
+  inputHandler = new bias.InputHandler();
   agent = new MouseAgent(inputHandler);
   //Register methods
   //on drag
@@ -28,8 +28,11 @@ function setup() {
   canvas.mouseReleased( function(event){
     agent.mouseEvent(event);
   });
-  for (let i = 0; i < 50; i++)
+  for (let i = 0; i < 50; i++) {
+    const check = inputHandler instanceof bias.InputHandler;
+    console.log("check :" + check);
     ellipses.push(new Ellipse(inputHandler));
+  }
 }
 
 function draw() {

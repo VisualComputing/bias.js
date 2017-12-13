@@ -1,8 +1,8 @@
-class Ellipse extends GrabberObject {
+class Ellipse extends bias.GrabberObject {
 
   constructor(handler, center = null, radius = null) {
-    super({ handler });
-    if ((r === null && c === null)){
+    super(handler);
+    if ((radius === null && center === null)){
       this.radiusX, this.radiusY, this.center;
       this.setPosition();
 
@@ -33,9 +33,9 @@ class Ellipse extends GrabberObject {
       const highX = 800 - maxRadius;
       const highY = 800 - maxRadius;
       const r = random(20, maxRadius);
-      this.setPositionAndRadii(new Vector(random(low, highX), random(low, highY)), r, r);
+      this.setPositionAndRadii(new p5.Vector(random(low, highX), random(low, highY)), r, r);
     }else {
-      this.setPositionAndRadii(new Vector(event.x(), event.y()), radiusX, radiusY);
+      this.setPositionAndRadii(new p5.Vector(event.x(), event.y()), radiusX, radiusY);
     }
   }
 
@@ -57,12 +57,12 @@ class Ellipse extends GrabberObject {
 
 
   draw(c = this.colour) {
-    pushStyle();
-    stroke(contourColour);
-    strokeWeight(sWeight);
+    push();
+    stroke(this.contourColour);
+    strokeWeight(this.sWeight);
     fill(c);
-    ellipse(center.x, center.y, 2*radiusX, 2*radiusY);
-    popStyle();
+    ellipse(this.center.x, this.center.y, 2*this.radiusX, 2*this.radiusY);
+    pop();
   }
 
   setMouseDragBindings() {
@@ -75,18 +75,18 @@ class Ellipse extends GrabberObject {
 
   motion2Interaction(event) {
     if (this.move) {
-      if (event.shortcut().matches(new Shortcut(Event.NO_ID)))
+      if (event.shortcut().matches(new bias.Shortcut(bias.Event.NO_ID)))
         this.setPosition(event);
     } else {
-      if (event.shortcut().matches(new Shortcut(LEFT)))
+      if (event.shortcut().matches(new bias.Shortcut(LEFT)))
         this.setPosition(event);
     }
-    if (event.shortcut().matches(new Shortcut(RIGHT)))
+    if (event.shortcut().matches(new bias.Shortcut(RIGHT)))
       this.setShape(event);
   }
 
   motion1Interaction(event) {
-    if (event.shortcut().matches(new Shortcut(Event.CTRL, CENTER)))
+    if (event.shortcut().matches(new bias.Shortcut(bias.Event.CTRL, CENTER)))
       this.setShape(event);
   }
 
