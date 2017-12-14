@@ -106,11 +106,11 @@ export default class Event {
   }
 
   /**
-   * @return the shortcut encapsulated by this event.
+   * Returns the shortcut encapsulated by this event.
    * @see Shortcut
    */
   shortcut() {
-    return new Shortcut(this.id(), this.modifiers());
+    return new Shortcut({ id: this.id(), modifiers: this.modifiers()});
   }
 
   /**
@@ -191,3 +191,11 @@ export default class Event {
     return r;
   }
 }
+// static fields
+Event.NO_ID = NO_ID;
+Event.NO_MODIFIER_MASK = NO_MODIFIER_MASK;
+Event.SHIFT            = SHIFT;
+Event.CTRL             = CTRL;
+Event.META             = META;
+Event.ALT              = ALT;
+Event.ALT_GRAPH        = ALT_GRAPH;

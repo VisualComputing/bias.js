@@ -18,7 +18,7 @@ export default class TapEvent extends Event {
       super({ modifiers, id});
       this._x = x;
       this._y = y;
-      this.count = count;
+      this._count = count;
     }
   }
 

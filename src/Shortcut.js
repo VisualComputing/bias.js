@@ -36,7 +36,7 @@ export default class Shortcut {
    * @param mask modifier mask defining the shortcut
    * @param id gesture ig
    */
-  constructor(id = NO_ID, modifiers = NO_MODIFIER_MASK) {
+  constructor({ id = NO_ID, modifiers = NO_MODIFIER_MASK } = {}) {
     this._modifiers = modifiers;
     this._id = id;
   }
