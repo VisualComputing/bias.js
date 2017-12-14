@@ -63,12 +63,12 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public boolean motion2Tracking(MotionEvent2 event) {
+  public boolean track(MotionEvent2 event) {
     return track(event.x(), event.y());
   }
   
   @Override
-  public boolean tapTracking(TapEvent event) {
+  public boolean track(TapEvent event) {
     return track(event.x(), event.y());
   }
   
@@ -77,7 +77,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void tapInteraction(TapEvent event) {
+  public void interact(TapEvent event) {
     if ( event.id() == LEFT )
       setColor();
     else if ( event.id() == RIGHT ) {
@@ -88,7 +88,7 @@ public class Ellipse extends GrabberObject {
   }
 
   @Override
-  public void motion2Interaction(MotionEvent2 event) {
+  public void interact(MotionEvent2 event) {
     if ( event.id() == LEFT )
       setPosition();
     else if ( event.id() == RIGHT ) {
