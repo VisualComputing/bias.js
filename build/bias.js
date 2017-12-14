@@ -1,5 +1,3 @@
-import {NO_ID, NO_MODIFIER_MASK} from "../src/Event";
-
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -508,7 +506,7 @@ class Shortcut {
    * @param mask modifier mask defining the shortcut
    * @param id gesture ig
    */
-  constructor(id = NO_ID, modifiers = NO_MODIFIER_MASK) {
+  constructor({ id = NO_ID, modifiers = NO_MODIFIER_MASK } = {}) {
     this._modifiers = modifiers;
     this._id = id;
   }
@@ -642,11 +640,11 @@ class Event {
   }
 
   /**
-   * @return the shortcut encapsulated by this event.
+   * Returns the shortcut encapsulated by this event.
    * @see Shortcut
    */
   shortcut() {
-    return new Shortcut({ mask: this.modifiers(), id: this.id() });
+    return new Shortcut({ id: this.id(), modifiers: this.modifiers()});
   }
 
   /**
@@ -727,6 +725,16 @@ class Event {
     return r;
   }
 }
+
+// static fields
+Event.NO_ID = NO_ID;
+Event.NO_MODIFIER_MASK = NO_MODIFIER_MASK;
+Event.SHIFT            = SHIFT;
+Event.CTRL             = CTRL;
+Event.META             = META;
+Event.ALT              = ALT;
+Event.ALT_GRAPH        = ALT_GRAPH;
+
 
 /**************************************************************************************
  * bias_tree
@@ -884,7 +892,7 @@ class TapEvent extends Event {
       super({ modifiers, id});
       this._x = x;
       this._y = y;
-      this.count = count;
+      this._count = count;
     }
   }
 
