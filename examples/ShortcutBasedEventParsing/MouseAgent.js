@@ -21,7 +21,7 @@ class MouseAgent extends bias.Agent {
     const CTRL = e.ctrlKey   ? 0b10   : 0b0;
     const META = e.metaKey   ? 0b100  : 0b0;
     const ALT  = e.altKey    ? 0b1000 : 0b0;
-    const modifiers = SHIFT + CTRL + META + ALT;
+    const modifiers = SHIFT + CTRL + META + ALT > 0 ? SHIFT + CTRL + META + ALT : bias.NO_MODIFIER_MASK;
 
     if (this.move || this.press || this.drag || this.release) {
       this.currentEvent = new bias.event.MotionEvent2({

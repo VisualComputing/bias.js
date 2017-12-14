@@ -31,6 +31,10 @@ function setup() {
   canvas.mouseWheel( function(event){
     agent.mouseEvent(event);
   });
+  //Avoid annoying menu on right click
+  document.oncontextmenu = function() {
+    return false;
+  }
 
   for (let i = 0; i < 1; i++) {
     const check = inputHandler instanceof bias.InputHandler;

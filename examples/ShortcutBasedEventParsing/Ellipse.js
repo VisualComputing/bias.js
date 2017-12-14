@@ -40,7 +40,6 @@ class Ellipse extends bias.GrabberObject {
   }
 
   setShape(event) {
-    console.log(event);
     if ( event instanceof bias.event.MotionEvent1 ) {
       this.radiusX += event.dx();
       this.radiusY += event.dx();
@@ -51,12 +50,6 @@ class Ellipse extends bias.GrabberObject {
   }
 
   setPositionAndRadii(p, rx, ry) {
-    console.log("center position : " + p);
-    console.log("center : " + this.center);
-    console.log("rx : " + rx);
-    console.log("ry : " + ry);
-    console.log("radx : " + this.radiusX);
-    console.log("rady : " + this.radiusY);
     this.center = p;
     this.radiusX = floor(rx);
     this.radiusY = floor(ry);
@@ -64,7 +57,6 @@ class Ellipse extends bias.GrabberObject {
 
 
   draw(c = this.colour) {
-    console.log("center : " + this.center + " radx : " + this.radiusX + " rady : " + this.radiusY);
     push();
     stroke(this.contourColour);
     strokeWeight(this.sWeight);
@@ -82,32 +74,33 @@ class Ellipse extends bias.GrabberObject {
   }
 
   motion2Interaction(event) {
-    console.log("motion 2d");
-    console.log(event);
-    console.log("mouseX" + mouseX);
-    console.log("mouseY" + mouseY);
+    console.log("ENTRA a MOVER");
+    console.log(this.move);
     if (this.move) {
-      if (event.shortcut().matches(new bias.Shortcut(bias.Event.NO_ID)))
+      console.log(event.shortcut());
+      console.log(new bias.Shortcut({id: 0}));
+      if (event.shortcut().matches(new bias.Shortcut({id: 0}))) {
         this.setPosition(event);
+      }
     } else {
-      if (event.shortcut().matches(new bias.Shortcut(1)))
+      if (event.shortcut().matches(new bias.Shortcut({id: 1})))
         this.setPosition(event);
     }
-    if (event.shortcut().matches(new bias.Shortcut(2))) {
-      //this.setShape(event);
+    if (event.shortcut().matches(new bias.Shortcut({id: 2}))) {
+      this.setShape(event);
     }
   }
 
   motion1Interaction(event) {
-    if (event.shortcut().matches(new bias.Shortcut(10, 0))) {
-      console.log("ENTRA");
+    if (event.shortcut().matches(new bias.Shortcut({ id: 10 , modifiers: 8}))) {
       this.setShape(event);
     }
   }
 
   tapInteraction(event) {
-    if (event.shortcut().matches(new TapShortcut(1, 1)))
+    if (event.shortcut().matches(new bias.event.TapShortcut({ id: 11, count: 1 }))) {
       this.setColor();
+    }
   }
 
   motion2Tracking(event) {
