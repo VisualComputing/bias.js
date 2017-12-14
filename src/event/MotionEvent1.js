@@ -42,7 +42,7 @@ export default class MotionEvent1 extends MotionEvent {
   }
 
   get() {
-    return new MotionEvent1(this);
+    return new MotionEvent1({ other: this });
   }
 
   flush() {
