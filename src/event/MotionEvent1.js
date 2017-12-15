@@ -56,7 +56,7 @@ export default class MotionEvent1 extends MotionEvent {
 
   _setPrevious(previous) {
     this._relative = true;
-    if (previous != null) {
+    if (previous !== null) {
       if (previous instanceof MotionEvent1 && previous.id() === this.id()) {
         this._dx = this.x() - previous.x();
         this._distance = this.x() - previous.x();

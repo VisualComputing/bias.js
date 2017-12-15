@@ -55,8 +55,8 @@ export default class InputHandler {
   handle() {
     // 1. Agents
     for (const agent of this._agents) {
-      agent.poll(agent.pollFeed() != null ? agent.pollFeed() : agent.feed());
-      agent.handle(agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
+      agent.poll(agent.pollFeed() !== null ? agent.pollFeed() : agent.feed());
+      agent.handle(agent.handleFeed() !== null ? agent.handleFeed() : agent.feed());
     }
     // 2. Low level events
     while (this._tupleQueue.length > 0) {

@@ -99,7 +99,7 @@ export default class Agent {
    * @see #removeGrabbers()
    */
   addGrabber(grabber) {
-    if (grabber == null || this._grabberPool.has(grabber)) return false;
+    if (grabber === null || this._grabberPool.has(grabber)) return false;
     // Check if grabber implements Grabber methods
     Interface.Grabber.ensureImplements(grabber);
     this._grabberPool.add(grabber);
@@ -191,7 +191,7 @@ export default class Agent {
    */
   poll(event) {
     if (
-      event == null ||
+      event === null ||
       !this.inputHandler().isAgentRegistered(this) ||
       !this.isTracking()
     ) {
@@ -201,7 +201,7 @@ export default class Agent {
     // i.e., default grabber has the highest priority (which is good for
     // keyboards and doesn't hurt motion grabbers:
     const dG = this.defaultGrabber();
-    if (dG != null) {
+    if (dG !== null) {
       if (dG.track(event)) {
         this._trackedGrabber = dG;
         return this.trackedGrabber();
@@ -209,7 +209,7 @@ export default class Agent {
     }
     // then if tracked grabber remains the matches:
     const tG = this.trackedGrabber();
-    if (tG != null) {
+    if (tG !== null) {
       if (tG.track(event)) return this.trackedGrabber();
     }
     // pick the first otherwise
@@ -249,7 +249,7 @@ export default class Agent {
       return false;
     }
     const inputGrabber = this.inputGrabber();
-    if (inputGrabber != null) {
+    if (inputGrabber !== null) {
       return this.inputHandler().enqueueEventTuple(
         new Tuple(event, inputGrabber));
     }
@@ -263,7 +263,7 @@ export default class Agent {
    * @see #trackedGrabber()
    */
   inputGrabber() {
-    return this.trackedGrabber() != null ? this.trackedGrabber() : this.defaultGrabber();
+    return this.trackedGrabber() !== null ? this.trackedGrabber() : this.defaultGrabber();
   }
 
   /**
@@ -348,7 +348,7 @@ export default class Agent {
    * {@link #inputGrabber()}
    */
   setDefaultGrabber(grabber) {
-    if (grabber == null) {
+    if (grabber === null) {
       this._defaultGrabber = null;
       return true;
     }

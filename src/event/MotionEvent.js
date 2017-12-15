@@ -98,7 +98,7 @@ export default class MotionEvent extends Event {
   _setPrevious(previous) {
     this._relative = true;
     // makes sense only if derived classes call it
-    if (previous != null) {
+    if (previous !== null) {
       if (previous.id() === this.id()) {
         this._delay = this.timestamp() - previous.timestamp();
         if (this._delay === 0) this._speed = this._distance;

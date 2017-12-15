@@ -29,9 +29,7 @@ class Interface {
   }
 }
 
-const Input = {"Grabber": new Interface( { name: "Grabber", methods: ["track","interact"] }),
-  "Timer": new Interface({ name: "Timer", methods: ["run","timingTask", "stop", "cancel", "create", "isActive","period", "setPeriod", "isSingleShot", "setSingleShot"] }),
-  "Taskable": new Interface({ name: "Taskable", methods: ["execute"] })};
+const Input = { "Grabber": new Interface( { name: "Grabber", methods: ["track","interact"] }) };
 
 export default Input;
 
