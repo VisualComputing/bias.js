@@ -197,7 +197,7 @@ class Agent {
    * @see #removeGrabbers()
    */
   addGrabber(grabber) {
-    if (grabber == null || this._grabberPool.has(grabber)) return false;
+    if (grabber === null || this._grabberPool.has(grabber)) return false;
     // Check if grabber implements Grabber methods
     Input.Grabber.ensureImplements(grabber);
     this._grabberPool.add(grabber);
@@ -289,7 +289,7 @@ class Agent {
    */
   poll(event) {
     if (
-      event == null ||
+      event === null ||
       !this.inputHandler().isAgentRegistered(this) ||
       !this.isTracking()
     ) {
@@ -299,7 +299,7 @@ class Agent {
     // i.e., default grabber has the highest priority (which is good for
     // keyboards and doesn't hurt motion grabbers:
     const dG = this.defaultGrabber();
-    if (dG != null) {
+    if (dG !== null) {
       if (dG.track(event)) {
         this._trackedGrabber = dG;
         return this.trackedGrabber();
@@ -307,7 +307,7 @@ class Agent {
     }
     // then if tracked grabber remains the matches:
     const tG = this.trackedGrabber();
-    if (tG != null) {
+    if (tG !== null) {
       if (tG.track(event)){
         return this.trackedGrabber();
       }
@@ -349,7 +349,7 @@ class Agent {
       return false;
     }
     const inputGrabber = this.inputGrabber();
-    if (inputGrabber != null) {
+    if (inputGrabber !== null) {
       return this.inputHandler().enqueueEventTuple(
         new Tuple(event, inputGrabber));
     }
@@ -363,7 +363,7 @@ class Agent {
    * @see #trackedGrabber()
    */
   inputGrabber() {
-    return this.trackedGrabber() != null ? this.trackedGrabber() : this.defaultGrabber();
+    return this.trackedGrabber() !== null ? this.trackedGrabber() : this.defaultGrabber();
   }
 
   /**
@@ -448,7 +448,7 @@ class Agent {
    * {@link #inputGrabber()}
    */
   setDefaultGrabber(grabber) {
-    if (grabber == null) {
+    if (grabber === null) {
       this._defaultGrabber = null;
       return true;
     }
@@ -1028,7 +1028,7 @@ class MotionEvent extends Event {
   _setPrevious(previous) {
     this._relative = true;
     // makes sense only if derived classes call it
-    if (previous != null) {
+    if (previous !== null) {
       if (previous.id() === this.id()) {
         this._delay = this.timestamp() - previous.timestamp();
         if (this._delay === 0) this._speed = this._distance;
@@ -1137,7 +1137,7 @@ class MotionEvent1 extends MotionEvent {
 
   _setPrevious(previous) {
     this._relative = true;
-    if (previous != null) {
+    if (previous !== null) {
       if (previous instanceof MotionEvent1 && previous.id() === this.id()) {
         this._dx = this.x() - previous.x();
         this._distance = this.x() - previous.x();
@@ -1238,9 +1238,6 @@ class MotionEvent2 extends MotionEvent {
     this._relative = true;
     if (previous !== null) {
       if (previous instanceof MotionEvent2 && previous.id() === this.id()) {
-        console.log("Entra a condicional");
-        console.log(previous);
-        console.log(this);
         this._dx = this.x() - previous.x();
         this._dy = this.y() - previous.y();
         this._distance = MotionEvent.distance(this._x, this._y, previous.x(), previous.y());
@@ -1917,8 +1914,8 @@ class InputHandler {
   handle() {
     // 1. Agents
     for (const agent of this._agents) {
-      agent.poll(agent.pollFeed() != null ? agent.pollFeed() : agent.feed());
-      agent.handle(agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
+      agent.poll(agent.pollFeed() !== null ? agent.pollFeed() : agent.feed());
+      agent.handle(agent.handleFeed() !== null ? agent.handleFeed() : agent.feed());
     }
     // 2. Low level events
     while (this._tupleQueue.length > 0) {
@@ -2131,8 +2128,6 @@ class GrabberObject {
   }
 
   interact(event) {
-    console.log("interaction");
-    console.log(event);
     if (event instanceof KeyEvent) this.keyInteraction(event);
     if (event instanceof TapEvent) this.tapInteraction(event);
     if (event instanceof MotionEvent) this.motionInteraction(event);
@@ -2147,8 +2142,6 @@ class GrabberObject {
    * {@link remixlab.input.event.MotionEvent}.
    */
   motionInteraction(event) {
-    console.log("interaction");
-    console.log(event);
     if (event instanceof MotionEvent1) this.motion1Interaction(event);
     if (event instanceof MotionEvent2) this.motion2Interaction(event);
     if (event instanceof MotionEvent3) this.motion3Interaction(event);
