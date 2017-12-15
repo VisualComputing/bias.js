@@ -89,9 +89,7 @@ class Interface {
   }
 }
 
-const Input = {"Grabber": new Interface( { name: "Grabber", methods: ["track","interact"] }),
-  "Timer": new Interface({ name: "Timer", methods: ["run","timingTask", "stop", "cancel", "create", "isActive","period", "setPeriod", "isSingleShot", "setSingleShot"] }),
-  "Taskable": new Interface({ name: "Taskable", methods: ["execute"] })};
+const Input = { "Grabber": new Interface( { name: "Grabber", methods: ["track","interact"] }) };
 
 /**
  * Agents gather data from different sources --mostly from input devices such touch
@@ -191,7 +189,7 @@ class Agent {
    * @see #removeGrabbers()
    */
   addGrabber(grabber) {
-    if (grabber == null || this._grabberPool.has(grabber)) return false;
+    if (grabber === null || this._grabberPool.has(grabber)) return false;
     // Check if grabber implements Grabber methods
     Input.Grabber.ensureImplements(grabber);
     this._grabberPool.add(grabber);
@@ -283,7 +281,7 @@ class Agent {
    */
   poll(event) {
     if (
-      event == null ||
+      event === null ||
       !this.inputHandler().isAgentRegistered(this) ||
       !this.isTracking()
     ) {
@@ -293,7 +291,7 @@ class Agent {
     // i.e., default grabber has the highest priority (which is good for
     // keyboards and doesn't hurt motion grabbers:
     const dG = this.defaultGrabber();
-    if (dG != null) {
+    if (dG !== null) {
       if (dG.track(event)) {
         this._trackedGrabber = dG;
         return this.trackedGrabber();
@@ -301,7 +299,7 @@ class Agent {
     }
     // then if tracked grabber remains the matches:
     const tG = this.trackedGrabber();
-    if (tG != null) {
+    if (tG !== null) {
       if (tG.track(event)) return this.trackedGrabber();
     }
     // pick the first otherwise
@@ -341,7 +339,7 @@ class Agent {
       return false;
     }
     const inputGrabber = this.inputGrabber();
-    if (inputGrabber != null) {
+    if (inputGrabber !== null) {
       return this.inputHandler().enqueueEventTuple(
         new Tuple(event, inputGrabber));
     }
@@ -355,7 +353,7 @@ class Agent {
    * @see #trackedGrabber()
    */
   inputGrabber() {
-    return this.trackedGrabber() != null ? this.trackedGrabber() : this.defaultGrabber();
+    return this.trackedGrabber() !== null ? this.trackedGrabber() : this.defaultGrabber();
   }
 
   /**
@@ -440,7 +438,7 @@ class Agent {
    * {@link #inputGrabber()}
    */
   setDefaultGrabber(grabber) {
-    if (grabber == null) {
+    if (grabber === null) {
       this._defaultGrabber = null;
       return true;
     }
@@ -498,7 +496,7 @@ class Shortcut {
    * @param mask modifier mask defining the shortcut
    * @param id gesture ig
    */
-  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID } = {}) {
+  constructor({ id = NO_ID, modifiers = NO_MODIFIER_MASK } = {}) {
     this._modifiers = modifiers;
     this._id = id;
   }
@@ -632,11 +630,11 @@ class Event {
   }
 
   /**
-   * @return the shortcut encapsulated by this event.
+   * Returns the shortcut encapsulated by this event.
    * @see Shortcut
    */
   shortcut() {
-    return new Shortcut({ mask: this.modifiers(), id: this.id() });
+    return new Shortcut({ id: this.id(), modifiers: this.modifiers()});
   }
 
   /**
@@ -717,6 +715,14 @@ class Event {
     return r;
   }
 }
+// static fields
+Event.NO_ID = NO_ID;
+Event.NO_MODIFIER_MASK = NO_MODIFIER_MASK;
+Event.SHIFT            = SHIFT;
+Event.CTRL             = CTRL;
+Event.META             = META;
+Event.ALT              = ALT;
+Event.ALT_GRAPH        = ALT_GRAPH;
 
 /**************************************************************************************
  * bias_tree
@@ -874,7 +880,7 @@ class TapEvent extends Event {
       super({ modifiers, id});
       this._x = x;
       this._y = y;
-      this.count = count;
+      this._count = count;
     }
   }
 
@@ -946,8 +952,9 @@ class MotionEvent1 extends MotionEvent {
       this._dx = other._dx;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this._setPrevious(previous);
       this._x = x;
+      this._dx = dx;
+      this._setPrevious(previous);
     } else if (dx !== null) {
       super({ modifiers, id });
       this._dx = dx;
@@ -957,7 +964,7 @@ class MotionEvent1 extends MotionEvent {
   }
 
   get() {
-    return new MotionEvent1(this);
+    return new MotionEvent1({ other: this });
   }
 
   flush() {
@@ -970,7 +977,7 @@ class MotionEvent1 extends MotionEvent {
 
   _setPrevious(previous) {
     this._relative = true;
-    if (previous != null) {
+    if (previous !== null) {
       if (previous instanceof MotionEvent1 && previous.id() === this.id()) {
         this._dx = this.x() - previous.x();
         this._distance = this.x() - previous.x();
@@ -1044,8 +1051,9 @@ class MotionEvent2 extends MotionEvent {
       this._y = other._y; this._dy = other._dy;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this._setPrevious(previous);
       this._x = x; this._y = y;
+      this._dx = dx; this._dy = dy;
+      this._setPrevious(previous);
     } else if (dx !== null && dy !== null) {
       super({ modifiers, id });
       this._dx = dx; this._dy = dy;
@@ -1055,7 +1063,7 @@ class MotionEvent2 extends MotionEvent {
   }
 
   get() {
-    return new MotionEvent2(this);
+    return new MotionEvent2({ other: this });
   }
 
   flush() {
@@ -1132,7 +1140,7 @@ class MotionEvent2 extends MotionEvent {
    *
    * @param fromX if true keeps dof-1, else keeps dof-2
    */
-  MotionEvent1(fromX = true) {
+  event1(fromX = true) {
     let pe1;
     let e1;
     if (fromX) {
@@ -1180,8 +1188,9 @@ class MotionEvent3 extends MotionEvent {
       this._dy = other._dy; this._z = other._z; this._dz = other._dz;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(previous);
       this._x = x; this._y = y; this._z = z;
+      this._dx = dx; this._dy = dy; this._dz = dz;
+      this.setPreviousEvent(previous);
     } else if (dx !== null && dy !== null && dz !== null) {
       super({ modifiers, id });
       this._dx = dx; this._dy = dy; this._dz = dz;
@@ -1349,9 +1358,11 @@ class MotionEvent6 extends MotionEvent {
       this._rz = other._rz; this._drz = other._drz;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(previous);
       this._x = x; this._y = y; this._z = z;
       this._rx = rx; this._ry = ry; this._rz = rz;
+      this._dx = dx; this._dy = dy; this._dz = dz;
+      this._drx = drx; this._dry = dry; this._drz = drz;
+      this.setPreviousEvent(previous);
     } else if (
       dx !== null && dy !== null && dz !== null &&
       drx !== null && dry !== null && drz !== null) {
@@ -1718,7 +1729,7 @@ class MotionEvent extends Event {
   _setPrevious(previous) {
     this._relative = true;
     // makes sense only if derived classes call it
-    if (previous != null) {
+    if (previous !== null) {
       if (previous.id() === this.id()) {
         this._delay = this.timestamp() - previous.timestamp();
         if (this._delay === 0) this._speed = this._distance;
@@ -1824,13 +1835,13 @@ class MotionEvent extends Event {
 const event = {
   TapEvent,
   TapShortcut,
-  MotionEvent,
   MotionEvent1,
   MotionEvent2,
   MotionEvent3,
   MotionEvent6,
   KeyEvent,
   KeyShortcut,
+  MotionEvent,
 };
 
 /**************************************************************************************
@@ -1890,11 +1901,11 @@ class InputHandler {
   handle() {
     // 1. Agents
     for (const agent of this._agents) {
-      agent.poll(agent.pollFeed() != null ? agent.pollFeed() : agent.feed());
-      agent.handle(agent.handleFeed() != null ? agent.handleFeed() : agent.feed());
+      agent.poll(agent.pollFeed() !== null ? agent.pollFeed() : agent.feed());
+      agent.handle(agent.handleFeed() !== null ? agent.handleFeed() : agent.feed());
     }
     // 2. Low level events
-    while (this._tupleQueue > 0) {
+    while (this._tupleQueue.length > 0) {
       this._tupleQueue.shift().interact();
     }
   }
@@ -1999,7 +2010,7 @@ class InputHandler {
    * Returns true if the given agent is registered.
    */
   isAgentRegistered(agent) {
-    this._agents.has(agent);
+    return this._agents.has(agent);
   }
 
   /**
@@ -2030,8 +2041,8 @@ class InputHandler {
    * @see #handle()
    */
   enqueueEventTuple(tuple) {
-    if (!this._tupleQueue.contains(tuple)) {
-      return this._tupleQueue.add(tuple);
+    if (!this._tupleQueue.includes(tuple)) {
+      return this._tupleQueue.push(tuple);
     }
     return false;
   }
@@ -2053,191 +2064,6 @@ class InputHandler {
   }
 }
 
-/**************************************************************************************
- * bias_tree
- * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
- * @author Jean Pierre Charalambos, http://otrolado.info/
- *
- * All rights reserved. Library that eases the creation of interactive
- * scenes, released under the terms of the GNU Public License v3.0
- * which is available at http://www.gnu.org/licenses/gpl.html
- **************************************************************************************/
-
-/**
- * {@link Grabber} object which eases third-party implementation of the
- * {@link Grabber} interface.
- * <p>
- * Based on the concrete event type, this model object splits the
- * {@link #track(Event)} and the {@link #interact(Event)}
- * methods into more specific versions of them, e.g.,
- * {@link #track(TapEvent)}, {@link #track(MotionEvent3)},
- * {@link #interact(MotionEvent6)} , {@link #interact(KeyEvent)} and
- * so on. Thus allowing implementations of this abstract GrabberObject to override only
- * those method signatures that might be of their interest.
- */
-class GrabberObject {
-  /**
-   * Constructs and adds this grabber either to the agent pool @see Agent#grabbers()
-   * or to all agents belonging to the inputGrabber handler. @see InputHandler#agents()
-   */
-  constructor(agentOrInputHandler) {
-    if (agentOrInputHandler instanceof Agent || agentOrInputHandler instanceof InputHandler) {
-      agentOrInputHandler.addGrabber(this);
-    }
-    else throw Error("A Grabber must be associated either with an Agent or an InputHandler");
-  }
-
-  /**
-   * Check if this object is the {@link Agent#inputGrabber()} either from an agent or
-   * from any agent registered at the given input handler.
-   */
-  static grabsInput(agentOrInputHandler) {
-    if (agentOrInputHandler instanceof Agent) {
-      return agentOrInputHandler.inputGrabber() === this;
-    }
-    if (agentOrInputHandler instanceof InputHandler) {
-      for (const agent of agentOrInputHandler) {
-        if (agent.inputGrabber() === this) return true;
-      }
-    }
-    return false;
-  }
-
-  interact(event) {
-    if (event instanceof KeyEvent) this.keyInteraction(event);
-    if (event instanceof TapEvent) this.tapInteraction(event);
-    if (event instanceof MotionEvent) this.motionInteraction(event);
-  }
-
-  /**
-   * Calls performInteraction() on the proper motion event:
-   * {@link MotionEvent1}, {@link MotionEvent2},
-   * {@link MotionEvent3} or {@link MotionEvent6}.
-   * <p>
-   * Override this method when you want the object to interact an interaction from a
-   * {@link remixlab.input.event.MotionEvent}.
-   */
-  motionInteraction(event) {
-    if (event instanceof MotionEvent1) this.motion1Interaction(event);
-    if (event instanceof MotionEvent2) this.motion2Interaction(event);
-    if (event instanceof MotionEvent3) this.motion3Interaction(event);
-    if (event instanceof MotionEvent6) this.motion6Interaction(event);
-  }
-
-  /**
-   * Override this method when you want the object to perform an interaction from a
-   * {@link KeyEvent}.
-   */
-  keyInteraction(event) {
-  }
-
-  /**
-   * Override this method when you want the object to perform an interaction from a
-   * {@link TapEvent}.
-   */
-  tapInteraction(event) {
-  }
-
-  /**
-   * Override this method when you want the object to perform an interaction from a
-   * {@link MotionEvent1}.
-   */
-  motion1Interaction(event) {
-  }
-
-  /**
-   * Override this method when you want the object to perform an interaction from a
-   * {@link MotionEvent2}.
-   */
-  motion2Interaction(event) {
-  }
-
-  /**
-   * Override this method when you want the object to perform an interaction from a
-   * {@link MotionEvent3}.
-   */
-  motion3Interaction(event) {
-  }
-
-  /**
-   * Override this method when you want the object to perform an interaction from a
-   * {@link MotionEvent6}.
-   */
-  motion6Interaction(event) {
-  }
-
-  track(event) {
-    if (event instanceof KeyEvent) return this.keyTracking(event);
-    if (event instanceof TapEvent) return this.tapTracking(event);
-    if (event instanceof MotionEvent) return this.motionTracking(event);
-    return false;
-  }
-
-  /**
-   * Calls motionTracking() on the proper motion event:
-   * {@link MotionEvent1}, {@link MotionEvent2},
-   * {@link MotionEvent3} or {@link MotionEvent6}.
-   * <p>
-   * Override this method when you want the object to be picked from a
-   * {@link KeyEvent}.
-   */
-  motionTracking(event) {
-    if (event instanceof MotionEvent1) return this.motion1Tracking(event);
-    if (event instanceof MotionEvent2) return this.motion2Tracking(event);
-    if (event instanceof MotionEvent3) return this.motion3Tracking(event);
-    if (event instanceof MotionEvent6) return this.motion6Tracking(event);
-    return false;
-  }
-
-  /**
-   * Override this method when you want the object to be picked from a
-   * {@link KeyEvent}.
-   */
-  keyTracking(event) {
-    return false;
-  }
-
-  /**
-   * Override this method when you want the object to be picked from a
-   * {@link TapEvent}.
-   */
-  tapTracking(event) {
-    return false;
-  }
-
-  /**
-   * Override this method when you want the object to be picked from a
-   * {@link MotionEvent1}.
-   */
-  motion1Tracking(event) {
-    return false;
-  }
-
-  /**
-   * Override this method when you want the object to be picked from a
-   * {@link MotionEvent2}.
-   */
-  motion2Tracking(event) {
-    return false;
-  }
-
-  /**
-   * Override this method when you want the object to be picked from a
-   * {@link MotionEvent3}.
-   */
-  motion3Tracking(event) {
-    return false;
-  }
-
-  /**
-   * Override this method when you want the object to be picked from a
-   * {@link MotionEvent6}.
-   */
-  motion6Tracking(event) {
-    return false;
-  }
-}
-
 /**
  */
 const bias = {
@@ -2245,7 +2071,6 @@ const bias = {
   Event,
   event,
   EventGrabberTuple: Tuple,
-  GrabberObject,
   InputHandler,
   Shortcut,
 };
