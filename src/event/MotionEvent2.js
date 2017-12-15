@@ -127,7 +127,7 @@ export default class MotionEvent2 extends MotionEvent {
    *
    * @param fromX if true keeps dof-1, else keeps dof-2
    */
-  MotionEvent1(fromX = true) {
+  event1(fromX = true) {
     let pe1;
     let e1;
     if (fromX) {
