@@ -22,9 +22,11 @@ export default class MotionEvent6 extends MotionEvent {
       this._rz = other._rz; this._drz = other._drz;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(previous);
       this._x = x; this._y = y; this._z = z;
       this._rx = rx; this._ry = ry; this._rz = rz;
+      this._dx = dx; this._dy = dy; this._dz = dz;
+      this._drx = drx; this._dry = dry; this._drz = drz;
+      this.setPreviousEvent(previous);
     } else if (
       dx !== null && dy !== null && dz !== null &&
       drx !== null && dry !== null && drz !== null) {

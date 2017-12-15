@@ -38,8 +38,9 @@ export default class MotionEvent2 extends MotionEvent {
       this._y = other._y; this._dy = other._dy;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this._setPrevious(previous);
       this._x = x; this._y = y;
+      this._dx = dx; this._dy = dy;
+      this._setPrevious(previous);
     } else if (dx !== null && dy !== null) {
       super({ modifiers, id });
       this._dx = dx; this._dy = dy;

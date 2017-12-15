@@ -1112,8 +1112,9 @@ class MotionEvent1 extends MotionEvent {
       this._dx = other._dx;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this._setPrevious(previous);
       this._x = x;
+      this._dx = dx;
+      this._setPrevious(previous);
     } else if (dx !== null) {
       super({ modifiers, id });
       this._dx = dx;
@@ -1123,7 +1124,7 @@ class MotionEvent1 extends MotionEvent {
   }
 
   get() {
-    return new MotionEvent1(this);
+    return new MotionEvent1({ other: this });
   }
 
   flush() {
@@ -1210,8 +1211,9 @@ class MotionEvent2 extends MotionEvent {
       this._y = other._y; this._dy = other._dy;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this._setPrevious(previous);
+      this._dx = dx; this._dy = dy;
       this._x = x; this._y = y;
+      this._setPrevious(previous);
     } else if (dx !== null && dy !== null) {
       super({ modifiers, id });
       this._dx = dx; this._dy = dy;
@@ -1221,7 +1223,7 @@ class MotionEvent2 extends MotionEvent {
   }
 
   get() {
-    return new MotionEvent2(this);
+    return new MotionEvent2({ other: this });
   }
 
   flush() {
@@ -1236,6 +1238,9 @@ class MotionEvent2 extends MotionEvent {
     this._relative = true;
     if (previous !== null) {
       if (previous instanceof MotionEvent2 && previous.id() === this.id()) {
+        console.log("Entra a condicional");
+        console.log(previous);
+        console.log(this);
         this._dx = this.x() - previous.x();
         this._dy = this.y() - previous.y();
         this._distance = MotionEvent.distance(this._x, this._y, previous.x(), previous.y());
@@ -1346,8 +1351,9 @@ class MotionEvent3 extends MotionEvent {
       this._dy = other._dy; this._z = other._z; this._dz = other._dz;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(previous);
       this._x = x; this._y = y; this._z = z;
+      this._dx = dx; this._dy = dy; this._dz = dz;
+      this.setPreviousEvent(previous);
     } else if (dx !== null && dy !== null && dz !== null) {
       super({ modifiers, id });
       this._dx = dx; this._dy = dy; this._dz = dz;
@@ -1515,9 +1521,11 @@ class MotionEvent6 extends MotionEvent {
       this._rz = other._rz; this._drz = other._drz;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(previous);
       this._x = x; this._y = y; this._z = z;
       this._rx = rx; this._ry = ry; this._rz = rz;
+      this._dx = dx; this._dy = dy; this._dz = dz;
+      this._drx = drx; this._dry = dry; this._drz = drz;
+      this.setPreviousEvent(previous);
     } else if (
       dx !== null && dy !== null && dz !== null &&
       drx !== null && dry !== null && drz !== null) {

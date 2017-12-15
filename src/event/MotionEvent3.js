@@ -16,8 +16,9 @@ export default class MotionEvent3 extends MotionEvent {
       this._dy = other._dy; this._z = other._z; this._dz = other._dz;
     } else if (previous !== undefined) {
       super({ modifiers, id });
-      this.setPreviousEvent(previous);
       this._x = x; this._y = y; this._z = z;
+      this._dx = dx; this._dy = dy; this._dz = dz;
+      this.setPreviousEvent(previous);
     } else if (dx !== null && dy !== null && dz !== null) {
       super({ modifiers, id });
       this._dx = dx; this._dy = dy; this._dz = dz;
