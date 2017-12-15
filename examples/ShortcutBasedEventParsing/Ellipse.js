@@ -74,31 +74,27 @@ class Ellipse extends bias.GrabberObject {
   }
 
   motion2Interaction(event) {
-    console.log("ENTRA a MOVER");
-    console.log(this.move);
     if (this.move) {
-      console.log(event.shortcut());
-      console.log(new bias.Shortcut({id: 0}));
-      if (event.shortcut().matches(new bias.Shortcut({id: 0}))) {
+      if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.NO_BUTTON }))) {
         this.setPosition(event);
       }
     } else {
-      if (event.shortcut().matches(new bias.Shortcut({id: 1})))
+      if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.LEFT })))
         this.setPosition(event);
     }
-    if (event.shortcut().matches(new bias.Shortcut({id: 2}))) {
+    if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.RIGHT }))) {
       this.setShape(event);
     }
   }
 
   motion1Interaction(event) {
-    if (event.shortcut().matches(new bias.Shortcut({ id: 10 , modifiers: 8}))) {
+    if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.WHEEL, modifiers: bias.Event.CTRL }))) {
       this.setShape(event);
     }
   }
 
   tapInteraction(event) {
-    if (event.shortcut().matches(new bias.event.TapShortcut({ id: 11, count: 1 }))) {
+    if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.CLICK, count: 1 }))) {
       this.setColor();
     }
   }

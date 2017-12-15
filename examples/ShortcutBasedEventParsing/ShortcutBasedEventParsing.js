@@ -11,7 +11,7 @@ let ellipses = [];
 let canvas;
 
 function setup() {
-  canvas = createCanvas(640, 360);
+  canvas = createCanvas(window.innerWidth, window.innerHeight);
   inputHandler = new bias.InputHandler();
   agent = new MouseAgent(inputHandler);
   //Register methods
@@ -31,13 +31,8 @@ function setup() {
   canvas.mouseWheel( function(event){
     agent.mouseEvent(event);
   });
-  //Avoid annoying menu on right click
-  document.oncontextmenu = function() {
-    return false;
-  }
 
-  for (let i = 0; i < 1; i++) {
-    const check = inputHandler instanceof bias.InputHandler;
+  for (let i = 0; i < 100; i++) {
     ellipses.push(new Ellipse(inputHandler));
   }
 }
