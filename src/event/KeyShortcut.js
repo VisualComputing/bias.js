@@ -1,3 +1,14 @@
+/**************************************************************************************
+ * bias_tree
+ * Copyright (c) 2014-2017 National University of Colombia, https://github.com/remixlab
+ * @author Jean Pierre Charalambos, http://otrolado.info/
+ *
+ * All rights reserved. Library that eases the creation of interactive
+ * scenes, released under the terms of the GNU Public License v3.0
+ * which is available at http://www.gnu.org/licenses/gpl.html
+ **************************************************************************************/
+
+import { NO_ID, NO_MODIFIER_MASK } from '../Event';
 import Shortcut from '../Shortcut';
 
 /**
@@ -13,19 +24,11 @@ export default class KeyShortcut extends Shortcut {
    *
    * @param key the character that defines the key shortcut.
    * @param mmodifiers  the mask
-   * @param id the virtual key that defines the key shortcut.
+   * @param virtualKey the virtual key that defines the key shortcut.
    */
-  constructor({ key = null, modifiers = null, id = null }) {
-    if (key !== null) {
-      super();
-      this._key = key;
-    } else if (modifiers !== null) {
-      super({ modifiers, id });
-      this._key = '\0';
-    } else {
-      super({ id });
-      this._key = '\0';
-    }
+  constructor({ key = '\0', modifiers = NO_MODIFIER_MASK, virtualKey = NO_ID } = {}) {
+    super({ modifiers, id: virtualKey });
+    this._key = key;
   }
   /**
    * Returns the key-shortcut key.

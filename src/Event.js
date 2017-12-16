@@ -5,8 +5,8 @@
  * objects, are reported by {@link #fired()} and {@link #flushed()}, respectively.
  * <p>
  * The following are the main class specializations:
- * {@link remixlab.bias.event.MotionEvent}, {@link remixlab.bias.event.ClickEvent}, and
- * {@link KeyEvent}. Please refer to their documentation for
+ * {@link remixlab.input.event.MotionEvent}, {@link TapEvent}, and
+ * {@link remixlab.input.event.KeyEvent}. Please refer to their documentation for
  * details.
  * <p>
  * If you ever need to define you're own event type, derive from this class; and, optional,
@@ -20,7 +20,7 @@
  * the PApplet the so called mouseEvent and KeyEvent methods. Moreover, the
  * {@link Agent#handleFeed()} provides a callback alternative when none
  * of these mechanisms are available (as it often happens when dealing with specialized,
- * non-default input hardware).
+ * non-default inputGrabber hardware).
  */
 import Shortcut from './Shortcut';
 
@@ -33,30 +33,19 @@ export const ALT              = 0b1000;
 export const ALT_GRAPH        = 0b10000;
 
 export default class Event {
-  constructor({ modifiers = null, id = null, other = null }) {
-    this._fire = false;
-    this._flush = false;
-    /**
-     * Constructs an event with an "empty" {@link Shortcut}.
-     */
-    this._modifiers = NO_MODIFIER_MASK;
-    this._id = NO_ID;
-    this._timestamp = window.performance.now();
-
-    /**
-     * Constructs an event taking the given {@code modifiers} as a
-     * {@link Shortcut}.
-     */
-    if (modifiers !== null && id !== null) {
-      this._modifiers = modifiers;
-      this._id = id;
-      this._timestamp = window.performance.now();
-    } else if (other !== null) {
+  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID, other = null } = {}) {
+    if (other !== null) {
       this._modifiers = other._modifiers;
       this._id = other._id;
       this._timestamp = window.performance.now();
       this._fire = other._fire;
       this._flush = other._flush;
+    } else {
+      this._fire = false;
+      this._flush = false;
+      this._modifiers = modifiers;
+      this._id = id;
+      this._timestamp = window.performance.now();
     }
   }
 
@@ -117,11 +106,11 @@ export default class Event {
   }
 
   /**
-   * @return the shortcut encapsulated by this event.
+   * Returns the shortcut encapsulated by this event.
    * @see Shortcut
    */
   shortcut() {
-    return new Shortcut({ mask: this.modifiers(), id: this.id() });
+    return new Shortcut({ id: this.id(), modifiers: this.modifiers()});
   }
 
   /**
@@ -146,7 +135,7 @@ export default class Event {
   }
 
   /**
-   * Only {@link remixlab.bias.event.MotionEvent}s may be null.
+   * Only {@link remixlab.input.event.MotionEvent}s may be null.
    */
   isNull() {
     return false;
@@ -202,3 +191,11 @@ export default class Event {
     return r;
   }
 }
+// static fields
+Event.NO_ID = NO_ID;
+Event.NO_MODIFIER_MASK = NO_MODIFIER_MASK;
+Event.SHIFT            = SHIFT;
+Event.CTRL             = CTRL;
+Event.META             = META;
+Event.ALT              = ALT;
+Event.ALT_GRAPH        = ALT_GRAPH;

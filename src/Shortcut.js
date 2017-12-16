@@ -17,15 +17,13 @@
  * <p>
  * The current implementation supports the following event/shortcut types:
  * <ol>
- * <li>{@link remixlab.bias.event.MotionEvent} /
- * {@link remixlab.bias.Shortcut}. Note that motion-event derived classes:
- * {@link remixlab.bias.event.DOF1Event}, {@link remixlab.bias.event.DOF2Event},
- * {@link remixlab.bias.event.DOF3Event}, {@link remixlab.bias.event.DOF6Event}, are also
+ * <li>{@link remixlab.input.event.MotionEvent} /
+ * {@link remixlab.input.Shortcut}. Note that motion-event derived classes:
+ * {@link MotionEvent1}, {@link MotionEvent2},
+ * {@link MotionEvent3}, {@link MotionEvent6}, are also
  * related to shortcuts.</li>
- * <li>{@link remixlab.bias.event.ClickEvent} / {@link remixlab.bias.event.ClickShortcut}
+ * <li>{@link TapEvent} / {@link TapShortcut}
  * </li>
- * <li>{@link KeyEvent} /
- * {@link KeyShortcut}</li>
  * </ol>
  */
 
@@ -34,19 +32,19 @@ import { NO_MODIFIER_MASK, NO_ID } from './Event';
 export default class Shortcut {
   /**
    * Constructs an "empty" shortcut. Same as: {@link #Shortcut(int)} with the integer
-   * parameter being NO_NOMODIFIER_MASK.
+   * parameter being NO_NOMODIFIER_MASK if no parametes are passed.
+   * @param mask modifier mask defining the shortcut
+   * @param id gesture ig
    */
-  constructor({ mask = null, id = null }) {
-    this._mask = mask || NO_MODIFIER_MASK;
-    this._id = id || NO_ID;
-
-    this.matches = this.matches.bind(this);
+  constructor({ id = NO_ID, modifiers = NO_MODIFIER_MASK } = {}) {
+    this._modifiers = modifiers;
+    this._id = id;
   }
   /**
    * Returns the shortcut's modifiers mask.
    */
   modifiers() {
-    return this._mask;
+    return this._modifiers;
   }
 
   /**

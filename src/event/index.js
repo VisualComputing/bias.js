@@ -1,20 +1,20 @@
 import KeyEvent from './KeyEvent';
 import KeyShortcut from './KeyShortcut';
-import ClickEvent from './ClickEvent';
-import ClickShortcut from './ClickShortcut';
+import TapEvent from './TapEvent';
+import TapShortcut from './TapShortcut';
 import MotionEvent from './MotionEvent';
-import DOF1Event from './DOF1Event';
-import DOF2Event from './DOF2Event';
-import DOF3Event from './DOF3Event';
-import DOF6Event from './DOF6Event';
+import MotionEvent1 from './MotionEvent1';
+import MotionEvent2 from './MotionEvent2';
+import MotionEvent3 from './MotionEvent3';
+import MotionEvent6 from './MotionEvent6';
 
 const event = {
-  ClickEvent,
-  ClickShortcut,
-  DOF1Event,
-  DOF2Event,
-  DOF3Event,
-  DOF6Event,
+  TapEvent,
+  TapShortcut,
+  MotionEvent1,
+  MotionEvent2,
+  MotionEvent3,
+  MotionEvent6,
   KeyEvent,
   KeyShortcut,
   MotionEvent,

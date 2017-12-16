@@ -1,9 +1,7 @@
 import Agent from './Agent';
 import Event from './Event';
 import event from './event/index';
-import EventGrabberTuple from './EventGrabberTuple';
-import Grabber from './Grabber';
-import GrabberObject from './GrabberObject';
+import EventGrabberTuple from './Tuple';
 import InputHandler from './InputHandler';
 import Shortcut from './Shortcut';
 
@@ -14,8 +12,6 @@ const bias = {
   Event,
   event,
   EventGrabberTuple,
-  Grabber,
-  GrabberObject,
   InputHandler,
   Shortcut,
 };
