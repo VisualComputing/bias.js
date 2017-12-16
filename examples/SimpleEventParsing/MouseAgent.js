@@ -71,5 +71,6 @@ class MouseAgent extends bias.Agent {
  * https://developer.mozilla.org/es/docs/Web/API/MouseEvent/buttons */
 MouseAgent.NO_BUTTON = bias.Event.NO_ID;
 MouseAgent.LEFT      = 1;
-MouseAgent.RIGHT     = 2;
+MouseAgent.MIDDLE    = 2;
+MouseAgent.RIGHT     = 3;
 MouseAgent.WHEEL     = 10;
