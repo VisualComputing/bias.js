@@ -1,7 +1,7 @@
-class Ellipse extends bias.GrabberObject {
+class Ellipse{
 
   constructor(handler, center = null, radius = null) {
-    super(handler);
+
     if ((radius === null && center === null)){
       this.radiusX, this.radiusY, this.center;
       this.setPosition();
@@ -73,6 +73,23 @@ class Ellipse extends bias.GrabberObject {
     this.move = true;
   }
 
+  interact(event) {
+    if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.WHEEL, modifiers: bias.Event.CTRL }))) {
+      this.setShape(event);
+    } else if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.CLICK, count: 1 }))) {
+      this.setColor();
+    } else if (event instanceof bias.event.MotionEvent2) {
+      this.motion2Interaction(event);
+    }
+  }
+
+  track(event) {
+    //we're sure it must be a Tap or a MotionEvent
+    const x = event.x();
+    const y = event.y()
+    return (pow((x - this.center.x), 2)/pow(this.radiusX, 2) + pow((y - this.center.y), 2)/pow(this.radiusY, 2) <= 1);
+  }
+
   motion2Interaction(event) {
     if (this.move) {
       if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.NO_BUTTON }))) {
@@ -85,29 +102,5 @@ class Ellipse extends bias.GrabberObject {
     if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.RIGHT }))) {
       this.setShape(event);
     }
-  }
-
-  motion1Interaction(event) {
-    if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.WHEEL, modifiers: bias.Event.CTRL }))) {
-      this.setShape(event);
-    }
-  }
-
-  tapInteraction(event) {
-    if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.CLICK, count: 1 }))) {
-      this.setColor();
-    }
-  }
-
-  motion2Tracking(event) {
-    return this.checkTrack(event.x(), event.y());
-  }
-
-  tapTracking(event) {
-    return this.checkTrack(event.x(), event.y());
-  }
-
-  checkTrack(x, y) {
-    return (pow((x - this.center.x), 2)/pow(this.radiusX, 2) + pow((y - this.center.y), 2)/pow(this.radiusY, 2) <= 1);
   }
 }

@@ -33,14 +33,17 @@ function setup() {
   });
 
   for (let i = 0; i < 100; i++) {
-    ellipses.push(new Ellipse(inputHandler));
+    const ellipse = new Ellipse();
+    ellipses.push(ellipse);
+    //Associate the Ellipse with the InputHandler
+    inputHandler.addGrabber(ellipse);
   }
 }
 
 function draw() {
   background(255);
   for (let i = 0; i < ellipses.length; i++) {
-    if ( ellipses[i].grabsInput(agent) )
+    if ( agent.inputGrabber() === ellipses[i] )
       ellipses[i].draw(color(255, 0, 0));
     else
       ellipses[i].draw();
