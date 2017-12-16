@@ -8,6 +8,8 @@ class MouseAgent extends bias.Agent {
     this.press = false;
     this.drag = false;
     this.release = false;
+    this.click = false;
+    this.prevType = null;
   }
 
   mouseEvent(e) {
@@ -15,6 +17,14 @@ class MouseAgent extends bias.Agent {
     this.press = e.type === "mousedown";
     this.drag = e.type === "mousemove" && e.which > 0;
     this.release = e.type === "mouseup";
+    //emulate click with middle and right button
+    this.click = false;
+    if(this.prevEvent !== null){
+      if((this.prevType === "mousedown" && e.type === "mouseup") || e.type === "click"){
+        this.click = true;
+      }
+    }
+    this.prevType = e.type;
 
     // Modifiers
     const SHIFT = e.shiftKey ? bias.Event.SHIFT : 0b0;
@@ -23,7 +33,7 @@ class MouseAgent extends bias.Agent {
     const ALT  = e.altKey    ? bias.Event.ALT   : 0b0;
     const modifiers = SHIFT + CTRL + META + ALT > 0 ? SHIFT + CTRL + META + ALT : bias.NO_MODIFIER_MASK;
 
-    if (this.move || this.press || this.drag || this.release) {
+    if (!this.click && (this.move || this.press || this.drag || this.release)) {
       this.currentEvent = new bias.event.MotionEvent2({
         previous: this.prevEvent,
         x: mouseX,
@@ -31,7 +41,7 @@ class MouseAgent extends bias.Agent {
         modifiers,
         id: this.move ? bias.NO_ID : e.which,
       });
-      if (this.move && !this.click2Pick) {
+      if (this.move) {
         this.poll(this.currentEvent);
       }
       this.handle(this.press ? this.currentEvent.fire() : this.release ? this.currentEvent.flush() : this.currentEvent);
@@ -43,16 +53,14 @@ class MouseAgent extends bias.Agent {
       this.handle(new bias.event.MotionEvent1({ dx: delta, modifiers, id: MouseAgent.WHEEL }));
       return;
     }
-    if (e.type == "click") {
+    if (this.click) {
       const bogusTapEvent = new bias.event.TapEvent({
         x: mouseX,
         y: mouseY,
         modifiers,
-        id: MouseAgent.CLICK,
+        id: e.which,
         count: e.detail,
       });
-      if (this.click2Pick)
-        this.poll(bogusTapEvent);
       this.handle(bogusTapEvent);
       return;
     }
@@ -65,4 +73,3 @@ MouseAgent.NO_BUTTON = bias.Event.NO_ID;
 MouseAgent.LEFT      = 1;
 MouseAgent.RIGHT     = 2;
 MouseAgent.WHEEL     = 10;
-MouseAgent.CLICK     = 11;

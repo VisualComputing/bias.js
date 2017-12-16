@@ -1,14 +1,13 @@
 /**
- * Shortcut-based Event Parsing
+ * Simple Event Parsing
  * by Jean Pierre Charalambos
  *
- * Event parsing is based on the event.shortcut()
+ * Event parsing is based on the event.id()
  */
 
 let agent;
 let inputHandler;
 let ellipses = [];
-let canvas;
 
 function setup() {
   canvas = createCanvas(window.innerWidth, window.innerHeight);
@@ -30,12 +29,11 @@ function setup() {
   canvas.mouseWheel( function(event){
     agent.mouseEvent(event);
   });
-
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i++){
     const ellipse = new Ellipse();
     ellipses.push(ellipse);
-    //Associate the Ellipse with the InputHandler
-    inputHandler.addGrabber(ellipse);
+    //Associate the Ellipse with the Agent
+    agent.addGrabber(ellipse);
   }
 }
 
@@ -47,17 +45,7 @@ function draw() {
     else
       ellipses[i].draw();
   }
-  inputHandler.handle();
-}
-
-function keyPressed(){
-  if (key == ' ') {
-    agent.click2Pick = !agent.click2Pick;
-    agent.resetTrackedGrabber();
-    for (let i = 0; i < ellipses.length; i++)
-    if (agent.click2Pick)
-      ellipses[i].setMouseMoveBindings();
-    else
-      ellipses[i].setMouseDragBindings();
+  if(!MouseAgent.STOP){
+    inputHandler.handle();
   }
 }

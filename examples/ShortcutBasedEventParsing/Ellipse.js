@@ -1,8 +1,8 @@
-class Ellipse{
+class Ellipse {
 
-  constructor(handler, center = null, radius = null) {
+  constructor(center = null, radius = null) {
 
-    if ((radius === null && center === null)){
+    if ((radius === null && center === null)) {
       this.radiusX, this.radiusY, this.center;
       this.setPosition();
 
