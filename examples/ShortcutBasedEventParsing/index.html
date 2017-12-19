@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0>
+    <style> body {padding: 0; margin: 0;} </style>
+    <!-- Avoid annoying default events
+         See https://stackoverflow.com/questions/27116221/prevent-zoom-cross-browser-->
+    <script>
+      function load(){
+        document.body.addEventListener("wheel", zoomShortcut); //add the event
+        document.oncontextmenu = function() {
+          return false;
+        }
+      }
+
+      function zoomShortcut(e) {
+        if (e.ctrlKey) {            //[ctrl] pressed?
+          event.preventDefault();  //prevent zoom
+          return false;
+        }
+      }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/p5.min.js"></script>
+    <script src="../../js/bias.js"></script>
+    <script src="./Ellipse.js"></script>
+    <script src="./MouseAgent.js"></script>
+</head>
+<body onload="load()">
+    <script src="./ShortcutBasedEventParsing.js"></script>
+</body>
+</html>
