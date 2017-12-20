@@ -526,7 +526,9 @@ class Shortcut {
    * @param other shortcut
    */
   matches(other) {
-    return this.id() === other.id() && this.modifiers() === other.modifiers();
+    if(this.constructor.name === other.constructor.name)
+      return this.id() === other.id() && this.modifiers() === other.modifiers();
+    return false;
   }
 }
 
@@ -767,9 +769,8 @@ class KeyShortcut extends Shortcut {
   }
 
   matches(other) {
-    if (other instanceof KeyShortcut) {
-      return super.matches(other) && this.getKey() === other.getKey();
-    }
+    if(super.matches(other))
+      return this.getKey() === other.getKey();
     return false;
   }
 }
@@ -862,9 +863,8 @@ class TapShortcut extends Shortcut {
   }
 
   matches(other) {
-    if (other instanceof TapShortcut) {
-      return super.matches(other) && this.count() === other.count();
-    }
+    if(super.matches(other))
+      return this.count() === other.count();
     return false;
   }
 }
