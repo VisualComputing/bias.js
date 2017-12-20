@@ -24,9 +24,8 @@ export default class TapShortcut extends Shortcut {
   }
 
   matches(other) {
-    if (other instanceof TapShortcut) {
-      return super.matches(other) && this.count() === other.count();
-    }
+    if(super.matches(other))
+      return this.count() === other.count();
     return false;
   }
 }

@@ -60,6 +60,8 @@ export default class Shortcut {
    * @param other shortcut
    */
   matches(other) {
-    return this.id() === other.id() && this.modifiers() === other.modifiers();
+    if(this.constructor.name === other.constructor.name)
+      return this.id() === other.id() && this.modifiers() === other.modifiers();
+    return false;
   }
 }
