@@ -38,9 +38,8 @@ export default class KeyShortcut extends Shortcut {
   }
 
   matches(other) {
-    if (other instanceof KeyShortcut) {
-      return super.matches(other) && this.getKey() === other.getKey();
-    }
+    if(super.matches(other))
+      return this.getKey() === other.getKey();
     return false;
   }
 }

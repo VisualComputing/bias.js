@@ -10,7 +10,7 @@ export default class TapShortcut extends Shortcut {
    * @param id id
    * @param c  bumber of clicks
    */
-  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID, count = 1 }) {
+  constructor({ modifiers = NO_MODIFIER_MASK, id = NO_ID, count = 1 } = {}) {
     super({ modifiers, id });
     this._count = count;
     if (count <= 0) this._count = 1;
@@ -24,9 +24,8 @@ export default class TapShortcut extends Shortcut {
   }
 
   matches(other) {
-    if (other instanceof TapShortcut) {
-      return super.matches(other) && this.count() === other.count();
-    }
+    if(super.matches(other))
+      return this.count() === other.count();
     return false;
   }
 }
