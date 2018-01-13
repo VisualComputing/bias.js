@@ -814,14 +814,6 @@ class KeyEvent extends Event {
     return new KeyEvent({ other: this });
   }
 
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
-  }
-
   shortcut() {
     if (this._key === '\0') {
       return new KeyShortcut({ modifiers: this.modifiers(), id: this.id() });
@@ -886,14 +878,6 @@ class TapEvent extends Event {
 
   get() {
     return new TapEvent({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
   }
 
   shortcut() {
@@ -965,14 +949,6 @@ class MotionEvent1 extends MotionEvent {
 
   get() {
     return new MotionEvent1({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
   }
 
   _setPrevious(previous) {
@@ -1064,14 +1040,6 @@ class MotionEvent2 extends MotionEvent {
 
   get() {
     return new MotionEvent2({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
   }
 
   _setPrevious(previous) {
@@ -1201,14 +1169,6 @@ class MotionEvent3 extends MotionEvent {
 
   get() {
     return new MotionEvent3({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
   }
 
   setPreviousEvent(previous) {
@@ -1376,14 +1336,6 @@ class MotionEvent6 extends MotionEvent {
 
   get() {
     return new MotionEvent6({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
   }
 
   setPreviousEvent(previous) {
@@ -1672,14 +1624,6 @@ class MotionEvent extends Event {
 
   get() {
     return new MotionEvent({ other: this });
-  }
-
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
   }
 
   /**
