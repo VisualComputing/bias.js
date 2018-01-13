@@ -43,14 +43,6 @@ export default class MotionEvent extends Event {
     return new MotionEvent({ other: this });
   }
 
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
-  }
-
   /**
    * Returns the delay between two consecutive motion events. Meaningful only if the event
    * {@link #isRelative()}.

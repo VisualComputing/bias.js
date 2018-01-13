@@ -46,14 +46,6 @@ export default class KeyEvent extends Event {
     return new KeyEvent({ other: this });
   }
 
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
-  }
-
   shortcut() {
     if (this._key === '\0') {
       return new KeyShortcut({ modifiers: this.modifiers(), id: this.id() });

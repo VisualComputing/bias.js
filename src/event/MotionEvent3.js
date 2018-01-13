@@ -31,14 +31,6 @@ export default class MotionEvent3 extends MotionEvent {
     return new MotionEvent3({ other: this });
   }
 
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
-  }
-
   setPreviousEvent(previous) {
     this._relative = true;
     if (previous !== null) {

@@ -26,14 +26,6 @@ export default class TapEvent extends Event {
     return new TapEvent({ other: this });
   }
 
-  flush() {
-    return super.flush();
-  }
-
-  fire() {
-    return super.fire();
-  }
-
   shortcut() {
     return new TapShortcut({ modifiers: this.modifiers(), id: this.id(), count: this.count() });
   }
