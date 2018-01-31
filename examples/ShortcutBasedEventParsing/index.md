@@ -11,7 +11,7 @@ layout: default
 
 
 <div id="Shortcut">
-<!-- Shortcut sketch will go here! -->  
+<!-- SimpleEventParsing sketch will go here! -->  
 
 <script>
   function load(){
@@ -22,14 +22,13 @@ layout: default
   }
 
   function zoomShortcut(e) {
-    if (e.ctrlKey == true) {            //[ctrl] pressed?
-      e.preventDefault();  //prevent zoom
-      return false; 
+    if (e.ctrlKey) {            //[ctrl] pressed?
+      event.preventDefault();  //prevent zoom
+      return false;
     }
   }
 </script>
 </div>
-
 ## Source Code:
 
 ### Ellipse:
@@ -302,5 +301,6 @@ function keyPressed(){
 <script
  src="./examples/ShortcutBasedEventParsing/MouseAgent.js"></script>
 
-
+<body onload="load()">
 <script src="./examples/ShortcutBasedEventParsing/ShortcutBasedEventParsing.js"></script>
+</body>
