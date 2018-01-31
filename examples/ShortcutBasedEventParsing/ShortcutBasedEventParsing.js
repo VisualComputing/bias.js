@@ -16,7 +16,15 @@ function setup() {
   inputHandler = new bias.InputHandler();
   agent = new MouseAgent(inputHandler);
   //Register methods
+
+  for (let i = 0; i < 100; i++) {
+    const ellipseVar = new Ellipse();
+    ellipses.push(ellipseVar);
+    //Associate the Ellipse with the InputHandler
+    inputHandler.addGrabber(ellipseVar);
+  }
   canvas.mouseMoved( function(event){
+
     agent.mouseEvent(event);
   });
   canvas.mouseClicked( function(event){
@@ -32,13 +40,8 @@ function setup() {
     agent.mouseEvent(event);
   });
 
-  for (let i = 0; i < 100; i++) {
-    const ellipse = new Ellipse();
-    ellipses.push(ellipse);
-    //Associate the Ellipse with the InputHandler
-    inputHandler.addGrabber(ellipse);
-  }
 }
+
 
 function draw() {
   background(255);

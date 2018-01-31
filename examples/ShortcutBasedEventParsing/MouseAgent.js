@@ -10,12 +10,15 @@ class MouseAgent extends bias.Agent {
     this.release = false;
   }
 
-  mouseEvent(e) {
-    this.move = e.type === "mousemove" && e.which === 0;
+  mouseEvent(e){
+  // MoseEvent.which is non-stantard, it will not work for every user. MouseEvent.buttons is used instead.
+
+    this.move = e.type === "mousemove" && e.buttons === 0;
     this.press = e.type === "mousedown";
-    this.drag = e.type === "mousemove" && e.which > 0;
+    this.drag = e.type === "mousemove" && e.buttons > 0;
     this.release = e.type === "mouseup";
 
+    //console.log(this.move, e.buttons)
     // Modifiers
     const SHIFT = e.shiftKey ? bias.Event.SHIFT : 0b0;
     const CTRL = e.ctrlKey   ? bias.Event.CTRL  : 0b0;
@@ -31,7 +34,9 @@ class MouseAgent extends bias.Agent {
         modifiers,
         id: this.move ? bias.NO_ID : e.which,
       });
+
       if (this.move && !this.click2Pick) {
+        //console.log("move")
         this.poll(this.currentEvent);
       }
       this.handle(this.press ? this.currentEvent.fire() : this.release ? this.currentEvent.flush() : this.currentEvent);

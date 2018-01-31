@@ -22,9 +22,9 @@ layout: default
   }
 
   function zoomShortcut(e) {
-    if (e.ctrlKey) {            //[ctrl] pressed?
-      event.preventDefault();  //prevent zoom
-      return false;
+    if (e.ctrlKey == true) {            //[ctrl] pressed?
+      e.preventDefault();  //prevent zoom
+      return false; 
     }
   }
 </script>
@@ -302,6 +302,5 @@ function keyPressed(){
 <script
  src="./examples/ShortcutBasedEventParsing/MouseAgent.js"></script>
 
-<body onload="load()">
-    <script src="./examples/ShortcutBasedEventParsing/ShortcutBasedEventParsing.js"></script>
-</body>
+
+<script src="./examples/ShortcutBasedEventParsing/ShortcutBasedEventParsing.js"></script>

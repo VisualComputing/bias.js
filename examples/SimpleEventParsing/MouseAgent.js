@@ -13,9 +13,10 @@ class MouseAgent extends bias.Agent {
   }
 
   mouseEvent(e) {
-    this.move = e.type === "mousemove" && e.which === 0;
+    // MoseEvent.which is non-stantard, it will not work for every user. MouseEvent.buttons is used instead.
+    this.move = e.type === "mousemove" && e.buttons === 0;
     this.press = e.type === "mousedown";
-    this.drag = e.type === "mousemove" && e.which > 0;
+    this.drag = e.type === "mousemove" && e.buttons > 0;
     this.release = e.type === "mouseup";
     //emulate click with middle and right button
     this.click = false;
