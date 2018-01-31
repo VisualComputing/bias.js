@@ -23,7 +23,7 @@ layout: default
 
   function zoomShortcut(e) {
     if (e.ctrlKey) {            //[ctrl] pressed?
-      event.preventDefault();  //prevent zoom
+      e.preventDefault();  //prevent zoom
       return false;
     }
   }
