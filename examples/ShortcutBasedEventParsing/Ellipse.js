@@ -39,14 +39,9 @@ class Ellipse {
     }
   }
 
-  setShape(event) {
-    if ( event instanceof bias.event.MotionEvent1 ) {
+  setShape(event, dof1 = true) {
       this.radiusX += event.dx();
-      this.radiusY += event.dx();
-    } else if ( event instanceof bias.event.MotionEvent2 ) {
-      this.radiusX += event.dx();
-      this.radiusY += event.dy();
-    }
+      this.radiusY += dof1 ? event.dx() : event.dy();
   }
 
   setPositionAndRadii(p, rx, ry) {
@@ -78,7 +73,7 @@ class Ellipse {
       this.setShape(event);
     } else if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.CLICK, count: 1 }))) {
       this.setColor();
-    } else if (event instanceof bias.event.MotionEvent2) {
+    } else {
       this.motion2Interaction(event);
     }
   }
@@ -100,7 +95,7 @@ class Ellipse {
         this.setPosition(event);
     }
     if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.RIGHT }))) {
-      this.setShape(event);
+      this.setShape(event, false);
     }
   }
 }
