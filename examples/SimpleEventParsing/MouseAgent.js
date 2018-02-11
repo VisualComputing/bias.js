@@ -13,9 +13,9 @@ class MouseAgent extends bias.Agent {
   }
 
   mouseEvent(e) {
-    this.move = e.type === "mousemove" && e.which === 0;
+    this.move = e.type === "mousemove" && e.buttons === 0;
     this.press = e.type === "mousedown";
-    this.drag = e.type === "mousemove" && e.which > 0;
+    this.drag = e.type === "mousemove" && e.buttons > 0;
     this.release = e.type === "mouseup";
     //emulate click with middle and right button
     this.click = false;
@@ -39,7 +39,7 @@ class MouseAgent extends bias.Agent {
         x: mouseX,
         y: mouseY,
         modifiers,
-        id: this.move ? bias.NO_ID : e.which,
+        id: this.move ? bias.NO_ID : e.buttons,
       });
       if (this.move) {
         this.poll(this.currentEvent);
@@ -58,7 +58,7 @@ class MouseAgent extends bias.Agent {
         x: mouseX,
         y: mouseY,
         modifiers,
-        id: e.which,
+        id: e.buttons,
         count: e.detail,
       });
       this.handle(bogusTapEvent);
@@ -71,6 +71,6 @@ class MouseAgent extends bias.Agent {
  * https://developer.mozilla.org/es/docs/Web/API/MouseEvent/buttons */
 MouseAgent.NO_BUTTON = bias.Event.NO_ID;
 MouseAgent.LEFT      = 1;
-MouseAgent.MIDDLE    = 2;
-MouseAgent.RIGHT     = 3;
+MouseAgent.MIDDLE    = 4;
+MouseAgent.RIGHT     = 2;
 MouseAgent.WHEEL     = 10;
