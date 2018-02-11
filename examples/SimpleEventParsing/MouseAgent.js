@@ -9,7 +9,7 @@ class MouseAgent extends bias.Agent {
     this.drag = false;
     this.release = false;
     this.click = false;
-    this.prevType = null;
+    this.prevJSEvent = null;
   }
 
   mouseEvent(e) {
@@ -20,11 +20,10 @@ class MouseAgent extends bias.Agent {
     //emulate click with middle and right button
     this.click = false;
     if(this.prevEvent !== null){
-      if((this.prevType === "mousedown" && e.type === "mouseup") || e.type === "click"){
+      if((this.prevJSEvent.type === "mousedown" && e.type === "mouseup") || e.type === "click"){
         this.click = true;
       }
     }
-    this.prevType = e.type;
 
     // Modifiers
     const SHIFT = e.shiftKey ? bias.Event.SHIFT : 0b0;
@@ -33,7 +32,7 @@ class MouseAgent extends bias.Agent {
     const ALT  = e.altKey    ? bias.Event.ALT   : 0b0;
     const modifiers = SHIFT + CTRL + META + ALT > 0 ? SHIFT + CTRL + META + ALT : bias.NO_MODIFIER_MASK;
 
-    if (!this.click && (this.move || this.press || this.drag || this.release)) {
+    if (!this.click && (this.move || this.drag)) {
       this.currentEvent = new bias.event.MotionEvent2({
         previous: this.prevEvent,
         x: mouseX,
@@ -46,24 +45,21 @@ class MouseAgent extends bias.Agent {
       }
       this.handle(this.press ? this.currentEvent.fire() : this.release ? this.currentEvent.flush() : this.currentEvent);
       this.prevEvent = this.currentEvent.get();
-      return;
-    }
-    if (e.type === "wheel") {
-      const delta = e.wheelDelta !== 0 ? e.wheelDelta > 0 ? 1 : -1 : 0;
+    } else if (e.type === "wheel") {
+      const delta = e.deltaY !== 0 ? e.deltaY > 0 ? 1 : -1 : 0;
       this.handle(new bias.event.MotionEvent1({ dx: delta, modifiers, id: MouseAgent.WHEEL }));
-      return;
-    }
-    if (this.click) {
+    } else if (this.click) {
+      //TODO : Check for multiple clicks on the same area
       const bogusTapEvent = new bias.event.TapEvent({
         x: mouseX,
         y: mouseY,
         modifiers,
-        id: e.buttons,
-        count: e.detail,
+        id: this.prevJSEvent.buttons,
+        count: 1,
       });
       this.handle(bogusTapEvent);
-      return;
     }
+    this.prevJSEvent = e;
   }
 }
 //static fields

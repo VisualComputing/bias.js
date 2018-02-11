@@ -8,6 +8,7 @@ class MouseAgent extends bias.Agent {
     this.press = false;
     this.drag = false;
     this.release = false;
+    this.prevJSEvent = null;
   }
 
   mouseEvent(e) {
@@ -15,6 +16,13 @@ class MouseAgent extends bias.Agent {
     this.press = e.type === "mousedown";
     this.drag = e.type === "mousemove" && e.buttons > 0;
     this.release = e.type === "mouseup";
+    //emulate click with middle and right button
+    this.click = false;
+    if(this.prevEvent !== null){
+      if((this.prevJSEvent.type === "mousedown" && e.type === "mouseup") || e.type === "click"){
+        this.click = true;
+      }
+    }
 
     // Modifiers
     const SHIFT = e.shiftKey ? bias.Event.SHIFT : 0b0;
@@ -23,7 +31,7 @@ class MouseAgent extends bias.Agent {
     const ALT  = e.altKey    ? bias.Event.ALT   : 0b0;
     const modifiers = SHIFT + CTRL + META + ALT > 0 ? SHIFT + CTRL + META + ALT : bias.NO_MODIFIER_MASK;
 
-    if (this.move || this.press || this.drag || this.release) {
+    if (!this.click && (this.move || this.drag)) {
       this.currentEvent = new bias.event.MotionEvent2({
         previous: this.prevEvent,
         x: mouseX,
@@ -36,26 +44,23 @@ class MouseAgent extends bias.Agent {
       }
       this.handle(this.press ? this.currentEvent.fire() : this.release ? this.currentEvent.flush() : this.currentEvent);
       this.prevEvent = this.currentEvent.get();
-      return;
-    }
-    if (e.type === "wheel") {
-      const delta = e.wheelDelta !== 0 ? e.wheelDelta > 0 ? 1 : -1 : 0;
+    } else if (e.type === "wheel") {
+      const delta = e.deltaY !== 0 ? e.deltaY > 0 ? 1 : -1 : 0;
       this.handle(new bias.event.MotionEvent1({ dx: delta, modifiers, id: MouseAgent.WHEEL }));
-      return;
-    }
-    if (e.type == "click") {
+    } else if (e.type == "click") {
+      //TODO : Check for multiple clicks on the same area
       const bogusTapEvent = new bias.event.TapEvent({
         x: mouseX,
         y: mouseY,
         modifiers,
         id: MouseAgent.CLICK,
-        count: e.detail,
+        count: 1,
       });
       if (this.click2Pick)
         this.poll(bogusTapEvent);
       this.handle(bogusTapEvent);
-      return;
     }
+    this.prevJSEvent = e;
   }
 }
 //static fields

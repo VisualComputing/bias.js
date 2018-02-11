@@ -60,21 +60,18 @@ class Ellipse {
   }
 
   interact(event) {
-    if ( event instanceof bias.event.TapEvent ) {
-      if ( event.id() === MouseAgent.LEFT) {
-        this.setColor();
-      } else if (event.id() === MouseAgent.RIGHT) {
-        if (this.sWeight > 1)
-          this.sWeight--;
-      } else
-          this.sWeight++;
-    } else if (event instanceof bias.event.MotionEvent2) {
-      if (event.id() == MouseAgent.LEFT)
-        this.setPosition(event.x(), event.y());
-      else if ( event.id() == MouseAgent.RIGHT ) {
-        this.radiusX += event.dx();
-        this.radiusY += event.dy();
-      }
+    if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.LEFT}))) {
+      this.setColor();
+    } else if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.RIGHT}))) {
+      if (this.sWeight > 1)
+        this.sWeight--;
+    } else if (event.shortcut().matches(new bias.event.TapShortcut({ id: MouseAgent.MIDDLE}))) {
+      this.sWeight++;
+    } else if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.LEFT }))) {
+      this.setPosition(event.x(), event.y());
+    } else if (event.shortcut().matches(new bias.Shortcut({ id: MouseAgent.RIGHT }))) {
+      this.radiusX += event.dx();
+      this.radiusY += event.dy();
     }
   }
 }

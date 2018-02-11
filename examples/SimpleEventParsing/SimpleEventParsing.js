@@ -17,9 +17,6 @@ function setup() {
   canvas.mouseMoved( function(event){
     agent.mouseEvent(event);
   });
-  canvas.mouseClicked( function(event){
-    agent.mouseEvent(event);
-  });
   canvas.mousePressed( function(event){
     agent.mouseEvent(event);
   });
